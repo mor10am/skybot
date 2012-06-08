@@ -1,7 +1,6 @@
 <?php
 
 $loader = require_once 'vendor/autoload.php';
-$loader->add('Skybot', __DIR__."/src/");
 
 $dbus = new DBus(Dbus::BUS_SESSION, true);
 $proxy = $dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
@@ -9,12 +8,14 @@ $proxy = $dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
 $proxy->Invoke("NAME SKYBOT");
 $proxy->Invoke("PROTOCOL 7");
 
-$skype = new \Skybot\Skype('morten_amundsen', $proxy);
+$eventemitter = new Evenement\EventEmitter();
 
-$plugins = new \Skybot\PluginContainer();
+$skype = new \Skybot\Skype('morten_amundsen', $proxy, $eventemitter);
+
+$plugins = new \Skybot\PluginContainer($eventemitter, $skype);
 
 do {
-    $plugins->handle($skype->getRecentMessages());
+    $skype->searchAndEmitChatMessages();
 
     $dbus->waitLoop(1000);
 } while(true);

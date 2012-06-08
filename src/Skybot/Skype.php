@@ -2,7 +2,6 @@
 
 namespace Skybot;
 
-use Skybot\Skype\Chat;
 use Skybot\Skype\Message;
 
 class Skype
@@ -10,15 +9,23 @@ class Skype
     public $timestamp;
     public $botname;    
     public $proxy;
-    public $chats = array();
+    public $eventemitter;
+    public $messages = array();
+    public $marked = array();
     
-    public function __construct($botname, $proxy)
+    public function __construct($botname, $proxy, $eventemitter)
     {
     	$this->botname = $botname;
         $this->proxy = $proxy;
+        $this->eventemitter = $eventemitter;
         $this->timestamp = time();
     }
     
+    public function getEventEmitter()
+    {
+        return $this->eventemitter;
+    }
+
     public function getProxy()
     {
         return $this->proxy;
@@ -26,41 +33,48 @@ class Skype
        
     public function invoke($command)
     {
-    	return $this->proxy->Invoke($command);    	
+        //echo $command."\n";
+    	$response = $this->proxy->Invoke($command);    	
+        //echo $response."\n";
+        return $response;
     }
 
-    public function getRecentMessages()
-    {
-        $this->getRecentChats();
-            
-        $messages = array();
-
-        foreach ($this->chats as $chat) {    
-            $messages = array_merge($messages, $chat->getMessages($this->botname, $this->timestamp));
-        }
-        
-        return $messages;
-    }    
-    
-    public function getRecentChats()
-    {
+    public function searchAndEmitChatMessages()
+    {   
         $result = $this->invoke("SEARCH RECENTCHATS");
-        
-        $this->_returnChatList($result);
-        
-        return $this->chats;
-    }
 
-    private function _returnChatList($chatstring)
-    {
-        $chats = explode(", ", substr($chatstring, 6));
+        $chats = explode(", ", substr($result, 6));
 
-        $chatlist = array();
-        
+        if (!count($chats)) return true;
+
         foreach ($chats as $chatid) {
-            if (isset($this->chats[$chatid])) continue;
-
-            $this->chats[$chatid] = new Chat($chatid, $this);
+            $this->loadAndEmitChatMessages($chatid);
         }
-    }
+    }    
+
+    private function loadAndEmitChatMessages($chatid)
+    {
+        $result = $this->invoke("GET CHAT {$chatid} RECENTCHATMESSAGES"); 
+        
+        $messages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
+        
+        if (!count($messages)) return true;
+
+        foreach ($messages as $msgid) {
+            if (isset($this->messages[$msgid]) or isset($this->marked[$msgid])) continue;
+
+            $this->messages[$msgid] = true;
+
+            $msg = new Message($msgid, $chatid, $this);
+            
+            if ($msg->getHandle() == $this->botname or $msg->getTimestamp() <= $this->timestamp or $msg->isEmpty()) {
+                continue;
+            }            
+
+            $this->eventemitter->emit('skype.message', array($msg));
+
+            $msg->mark();
+            $this->marked[$msgid] = true;            
+        }         
+    }    
 }

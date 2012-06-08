@@ -8,31 +8,37 @@ class Message
     private $body;
     private $timestamp;
     private $handle;
+    private $chatid;
     private $marked = false;
-    private $chat;
+    private $skype;
 
-    public function __construct($chat = null, $msgid = null)
+    public function __construct($msgid = null, $chatid = null, $skype = null)
     {
-        if ($chat and $msgid) {
-            $this->chat = $chat;
-            $this->messageid = $msgid;
-            $msg = $chat->getSkype()->invoke("GET CHATMESSAGE $msgid BODY");
+        $this->messageid = $msgid;
+        $this->chatid = $chatid;
+        $this->skype = $skype;
+
+        if ($skype) {
+            $result = $skype->invoke("GET CHATMESSAGE $msgid BODY");
 
             $template = "CHATMESSAGE $msgid BODY ";
-            $this->body = trim(str_replace($template, "", $msg));
+            $this->body = trim(str_replace($template, "", $result));
 
-            $msg = $chat->getSkype()->invoke("GET CHATMESSAGE $msgid TIMESTAMP");
+            $result = $skype->invoke("GET CHATMESSAGE $msgid TIMESTAMP");
 
             $template = "CHATMESSAGE $msgid TIMESTAMP ";
-            $this->timestamp = trim(str_replace($template, "", $msg));        
+            $this->timestamp = trim(str_replace($template, "", $result));        
 
-            $msg = $chat->getSkype()->invoke("GET CHATMESSAGE $msgid FROM_HANDLE");
+            $result = $skype->invoke("GET CHATMESSAGE $msgid FROM_HANDLE");
 
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
-            $this->handle = trim(str_replace($template, "", $msg));     
-        }
+            $this->handle = trim(str_replace($template, "", $result));  
+        }      
+    }
 
-        echo "[".date('H:i:s', $this->timestamp)."] {$this->handle}: {$this->body}\n";
+    public function getChatId()
+    {
+        return $this->chatid;
     }
 
     public function setBody($msg)
@@ -55,9 +61,9 @@ class Message
         return $this->timestamp;
     }
     
-    public function getChat()
+    public function getSkype()
     {
-        return $this->chat;
+        return $this->skype;
     }
 
     public function isEmpty()
@@ -73,7 +79,7 @@ class Message
     public function mark()
     {
         $this->marked = true;
-        $this->chat->getSkype()->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
+        $this->skype->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
     }
 
     public function isMarked()
@@ -83,8 +89,8 @@ class Message
 
     public function reply($msg)
     {
-        if ($this->chat) {
-            $this->chat->chat($msg);
+        if ($this->skype) {
+            $this->skype->invoke("CHATMESSAGE {$this->chatid} ".$msg);
         } else {
             echo $msg."\n";
         }

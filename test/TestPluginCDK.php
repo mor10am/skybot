@@ -1,11 +1,10 @@
 <?php
 
-require_once "../src/PluginContainer.php";
-require_once "../src/Skype/Message.php";
+$loader = require_once __DIR__."/../vendor/autoload.php";
 
-$plugin = new Plugin_CDK();
+$plugin = new \Skybot\Plugin\CDK();
 
-$message = new Skype_Message();
+$message = new \Skybot\Skype\Message();
 
 $message->setBody("cdk 20601391");
 $message->setHandle("tpnordic.hubot");

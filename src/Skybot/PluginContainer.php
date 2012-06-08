@@ -3,15 +3,19 @@
 namespace Skybot;
 
 use Skybot\Skype;
+use Skybot\Skype\Message;
 use Skybot\Plugin;
 use Symfony\Component\Finder\Finder;
 
 class PluginContainer
 {
 	private $plugins = array();
+	private $eventemitter;
 
-	public function __construct(Skype $skype = null)
+	public function __construct($eventemitter, $skype)
 	{
+		$this->eventemitter = $eventemitter;
+
 		$finder = new Finder();
 		$finder->files()->in(__DIR__."/Plugin/")->name("*.php");
 
@@ -26,24 +30,25 @@ class PluginContainer
 				}
 			} 	
 		}
+
+		$plugincontainer = $this;
+
+		$eventemitter->on('skype.message', function(Message $chatmsg) use ($plugincontainer) {
+
+			if (!$chatmsg->isMarked()) {
+				foreach ($plugincontainer->getPlugins() as $plugin) {
+					try {
+						if ($plugin->parse($chatmsg)) break;				
+					} catch (\Exception $e) {
+						$chatmsg->reply($e->getMessage());
+					}
+				}
+			}	
+		});
 	}
 
-	public function handle($messages)
+	public function getPlugins()
 	{
-		if (!count($messages)) return false;
-
-		foreach ($messages as $chatmsg) {
-			if ($chatmsg->isMarked()) continue;
-
-			foreach ($this->plugins as $plugin) {
-				try {
-					if ($plugin->parse($chatmsg)) break;				
-				} catch (\Exception $e) {
-					$chatmsg->reply($e->getMessage());
-				}
-			}
-
-			$chatmsg->mark();
-		}
+		return $this->plugins;
 	}
 }
