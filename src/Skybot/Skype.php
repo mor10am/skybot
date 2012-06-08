@@ -60,8 +60,6 @@ class Skype
         foreach ($chats as $chatid) {
             if (isset($this->chats[$chatid])) continue;
 
-            //if (strpos($chatid, $this->botname) === false) continue;
-
             $this->chats[$chatid] = new Chat($chatid, $this);
         }
     }
