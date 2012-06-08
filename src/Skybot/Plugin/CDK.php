@@ -7,7 +7,7 @@ use Skybot\PluginInterface;
 
 class CDK extends BasePlugin implements PluginInterface
 {
-	protected $regexp = "/^cdk\ [0-9]+$/";
+	protected $regexp = "/^cdk\ ([0-9]+)$/";
 	protected $description = "Get customerinfo from KAS";
 
 	public function handle($result, $handle)
