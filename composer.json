@@ -1,0 +1,15 @@
+{
+	"name": "mor10am/skybot",
+	"description": "Skype bot",
+	"keywords": ["skype"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Morten Amundsen",
+			"email": "mor10am@gmail.com"
+		}
+	],
+	"require": {
+		"symfony/finder": "2.0.*"
+	}
+}
