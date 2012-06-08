@@ -9,16 +9,6 @@ $proxy = $dbus->createProxy( "com.Skype.API", "/com/Skype", "com.Skype.API");
 $proxy->Invoke("NAME SKYBOT");
 $proxy->Invoke("PROTOCOL 7");
 
-class SkypeHandler
-{
-    static $proxy;
-    
-    public static function notify($data)
-    {
-        global $proxy;               
-    }   
-}
-
 $skype = new Skype('morten_amundsen', $proxy);
 
 $plugins = new PluginContainer();
