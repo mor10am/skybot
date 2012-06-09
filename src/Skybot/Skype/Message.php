@@ -86,6 +86,8 @@ class Message
     {
         if ($this->dic['skype']) {
             $this->dic['skype']->reply($this, $txt, $dm);            
+        } else {
+            echo $txt."\n";
         }
     }
 }
