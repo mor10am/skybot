@@ -18,7 +18,7 @@ class Message
         $this->chatid = $chatid;
         $this->dic = $dic;
 
-        if ($dic and $dic['skype']) {
+        if ($dic and isset($dic['skype'])) {
             $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid BODY");
 
             $template = "CHATMESSAGE $msgid BODY ";
@@ -34,6 +34,11 @@ class Message
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
             $this->setSkypeName(trim(str_replace($template, "", $result)));  
         }      
+    }
+
+    public function getDic()
+    {
+        return $this->dic;
     }
 
     public function getChatId()
@@ -84,7 +89,7 @@ class Message
 
     public function reply($txt, $dm = false)
     {
-        if ($this->dic['skype']) {
+        if (isset($this->dic['skype'])) {
             $this->dic['skype']->reply($this, $txt, $dm);            
         } else {
             echo $txt."\n";

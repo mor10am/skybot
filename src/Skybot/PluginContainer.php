@@ -15,20 +15,22 @@ class PluginContainer
 	{
 		$this->dic = $dic;
 
-		$dic['eventemitter']->on('skype.message', function(Message $chatmsg) use ($dic) {
+		if (isset($dic['eventemitter'])) {
+			$dic['eventemitter']->on('skype.message', function(Message $chatmsg) use ($dic) {
 
-			$plugincontainer = $dic['plugincontainer'];
+				$plugincontainer = $dic['plugincontainer'];
 
-			if (!$chatmsg->isMarked()) {
-				foreach ($plugincontainer->getPlugins() as $plugin) {
-					try {
-						if ($plugin->parse($chatmsg)) break;				
-					} catch (\Exception $e) {
-						$chatmsg->reply($e->getMessage());
+				if (!$chatmsg->isMarked()) {
+					foreach ($plugincontainer->getPlugins() as $plugin) {
+						try {
+							if ($plugin->parse($chatmsg)) break;				
+						} catch (\Exception $e) {
+							$chatmsg->reply($e->getMessage());
+						}
 					}
-				}
-			}	
-		});
+				}	
+			});
+		}
 	}
 
 	public function add(PluginInterface $plugin)
