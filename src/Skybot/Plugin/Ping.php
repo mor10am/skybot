@@ -19,7 +19,5 @@ class Ping extends BasePlugin implements PluginInterface
 		}
 
 		$message->reply("Yo! Pong to you " . $message->getSkypeName() . "!", $dm);			
-
-		return true;
 	}
 }

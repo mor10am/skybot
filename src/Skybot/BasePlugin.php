@@ -28,7 +28,9 @@ abstract class BasePlugin
 			$this->dic['log']->addInfo($message->getSkypeName()." to Skybot : ".$message->getBody());
 		}
 
-		return $this->handle($result, $message);
+		$this->handle($result, $message);
+
+		return true;
 	}	
 
 	public function getResult()

@@ -30,7 +30,5 @@ class CDK extends BasePlugin implements PluginInterface
 		} else {
 			throw new \Exception("Customer $customerid not found.");
 		}
-
-		return true;
 	}
 }

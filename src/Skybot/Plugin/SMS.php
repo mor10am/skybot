@@ -33,7 +33,5 @@ class SMS extends BasePlugin implements PluginInterface
     	file_get_contents($url);
 
     	$message->reply("SMS sent to $number : " . $txt);
-
-		return true;
 	}
 }
