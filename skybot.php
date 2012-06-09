@@ -26,10 +26,14 @@ foreach ($finder as $file) {
 	if (in_array("Skybot\\PluginInterface", class_implements($classname))) {
 		$plugin = new $classname($skype);
 
-		if ($plugin instanceof BasePlugin) {
+		if ($plugin instanceof \Skybot\BasePlugin) {
 			$plugins->add($plugin);
+		} else {
+			die("$classname is not instance of Skybot\\BasePlugin\n");
 		}
-	} 	
+	} else {
+		die("$classname is does not implement Skybot\\PluginInterface\n");
+	}
 }
 
 $skybot = new \Skybot($skype, $plugins);

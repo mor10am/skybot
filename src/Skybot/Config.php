@@ -17,7 +17,7 @@ class Config
 	private function _load($filename)
     {
     	if (!file_exists($filename)) {
-    		throw new InvalidArgumentException("Config file $filename does not exist.");
+    		throw new \InvalidArgumentException("Config file $filename does not exist.");
     	}
 
         $config = Yaml::parse($filename);
@@ -25,19 +25,19 @@ class Config
         if (isset($config['skybot']['skypename'])) {
         	$this->skypename = $config['skybot']['skypename'];
         	if (!$this->skypename) {
-        		throw new Exception("Skypename is blank.");
+        		throw new \Exception("Skypename is blank.");
         	}
         } else {
-        	throw new Exception("The config skybot.skypename is missing!");
+        	throw new \Exception("The config skybot.skypename is missing!");
         }
 
         if (isset($config['skybot']['plugin_dir'])) {
         	$this->plugin_dir = $config['skybot']['plugin_dir'];
         	if (!$this->plugin_dir) {
-        		throw new Exception("Plugin directory is blank.");
+        		throw new \Exception("Plugin directory is blank.");
         	}
         } else {
-        	throw new Exception("The config skybot.plugin_dir is missing!");
+        	throw new \Exception("The config skybot.plugin_dir is missing!");
         }
     }
 
