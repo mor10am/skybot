@@ -1,10 +1,19 @@
 {
-    "hash": "59fd43a3d2ae82181920811adf33c487",
+    "hash": "75b85df475210b0278ddd459fd85c6dd",
     "packages": [
         {
             "package": "evenement/evenement",
             "version": "dev-master",
             "source-reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d"
+        },
+        {
+            "package": "monolog/monolog",
+            "version": "1.1.0"
+        },
+        {
+            "package": "pimple/pimple",
+            "version": "dev-master",
+            "source-reference": "v1.0.0"
         },
         {
             "package": "symfony/finder",
@@ -23,6 +32,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "evenement/evenement": 20
+        "evenement/evenement": 20,
+        "pimple/pimple": 20
     }
 }

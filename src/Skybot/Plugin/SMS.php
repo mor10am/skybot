@@ -8,12 +8,12 @@ use Skybot\PluginInterface;
 class SMS extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^sms\ (\d{8})\ (.*)/";
-	protected $description = "Send SMS";
+	protected $description = "Send SMS to Norwegian mobilephones.";
 
-	public function handle($result, $skypename)
+	public function handle($result, $message)
 	{
 		$number = $result[1];
-		$message = trim($result[2]);
+		$txt = trim($result[2]);
 
 		$first = substr($number, 0, 1);
 
@@ -22,17 +22,17 @@ class SMS extends BasePlugin implements PluginInterface
 			return true;
 		}
 
-		if (!$message) {
+		if (!$txt) {
 			$this->reply("No message specified to send to $number");
 		}
 
-		$message .= " [from $handle via SKYBOT]";
+		$txt .= " [from $handle via SKYBOT]";
 
-    	$url = "http://10.0.1.24/ss/generic_sms.php?projectid=SKYBOT&number={$number}&text=".urlencode($message);
+    	$url = "http://10.0.1.24/ss/generic_sms.php?projectid=SKYBOT&number={$number}&text=".urlencode($txt);
     
     	file_get_contents($url);
 
-    	$this->reply("SMS sent to $number : " . $message);
+    	$message->reply("SMS sent to $number : " . $txt);
 
 		return true;
 	}

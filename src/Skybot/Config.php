@@ -8,6 +8,7 @@ class Config
 {
 	public $skypename;
 	public $plugin_dir;
+    public $log_dir;
 
 	public function __construct($filename)
 	{
@@ -39,6 +40,16 @@ class Config
         } else {
         	throw new \Exception("The config skybot.plugin_dir is missing!");
         }
+
+        if (isset($config['skybot']['log_dir'])) {
+            $this->log_dir = $config['skybot']['log_dir'];
+            if (!$this->log_dir) {
+                throw new \Exception("Log dir directory is blank.");
+            }
+        } else {
+            throw new \Exception("The config skybot.log_dir is missing!");
+        }
+
     }
 
     public function getSkypeName()
@@ -50,4 +61,9 @@ class Config
     {
     	return $this->plugin_dir;
     }
+
+    public function getLogDir()
+    {
+        return $this->log_dir;
+    }    
 }

@@ -7,14 +7,13 @@ use Skybot\Skype\Message;
 
 abstract class BasePlugin
 {
-	protected $skype;
+	protected $dic;
 	protected $regexp;
 	protected $description;
-	protected $currentmsg;
 
-	public function __construct(Skype $skype = null)
+	public function __construct(\Pimple $dic = null)
 	{
-		$this->skype = $skype;
+		$this->dic = $dic;
 	}
 
 	public function parse(Message $message)
@@ -22,26 +21,10 @@ abstract class BasePlugin
 		if (!$this->regexp) return false;
 		if (!$matches = preg_match($this->regexp, $message->getBody(), $result)) return false;
 		
-		$this->currentmsg = $message;
-		
-		$res = $this->handle($result, $message->getSkypeName());
+		$this->dic['log']->addInfo($message->getSkypeName()." to Skybot : ".$message->getBody());
 
-		$this->currentmsg = null;
-
-		return $res;
+		return $this->handle($result, $message);
 	}	
-
-	protected function reply($msg)
-	{
-		if ($this->currentmsg) {
-			$this->currentmsg->reply($msg);
-		}
-	}
-
-	public function getSkype()
-	{
-		return $this->skype;
-	}
 
 	public function getRegExp()
 	{

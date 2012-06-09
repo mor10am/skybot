@@ -3,6 +3,8 @@
 $loader = require_once 'vendor/autoload.php';
 
 use Symfony\Component\Finder\Finder;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 try {
 	$config = new \Skybot\Config(__DIR__."/config.yml");	
@@ -11,11 +13,20 @@ try {
 	die($e->getMessage()."\n");
 }
 
-$eventemitter = new Evenement\EventEmitter();
+$log = new Logger('skybot');
+$log->pushHandler(new StreamHandler($config->getLogDir()."/".date('Ymd').".log", Logger::DEBUG));
 
-$skype = new \Skybot\Skype($config, $eventemitter);
+$dic = new \Pimple();
+$dic['eventemitter'] = $dic->share(function($c) { return new Evenement\EventEmitter(); });
+$dic['config'] = $config;
+$dic['log'] = $log;
 
-$plugins = new \Skybot\PluginContainer($config, $eventemitter);
+$skype = new \Skybot\Skype($dic);
+
+$plugincontainer = new \Skybot\PluginContainer($dic);
+
+$dic['skype'] = $skype;
+$dic['plugincontainer'] = $plugincontainer;
 
 $finder = new Finder();
 $finder->files()->in($config->getPluginDir())->name("*.php");
@@ -24,10 +35,11 @@ foreach ($finder as $file) {
 	$classname = "Skybot\\Plugin\\".basename($file->getFileName(), ".php");
 
 	if (in_array("Skybot\\PluginInterface", class_implements($classname))) {
-		$plugin = new $classname($skype);
+		$plugin = new $classname($dic);
 
 		if ($plugin instanceof \Skybot\BasePlugin) {
-			$plugins->add($plugin);
+			$plugincontainer->add($plugin);
+			$dic['log']->addDebug("Added plugin $classname : ".$plugin->getDescription());
 		} else {
 			die("$classname is not instance of Skybot\\BasePlugin\n");
 		}
@@ -36,5 +48,5 @@ foreach ($finder as $file) {
 	}
 }
 
-$skybot = new \Skybot($skype, $plugins);
+$skybot = new \Skybot($dic);
 $skybot->run();

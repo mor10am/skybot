@@ -11,28 +11,27 @@ class Skype
 
     public $timestamp;
     public $botname;  
-    public $eventemitter;
-    public $config;
     public $messages = array();
     public $marked = array();
     
-    public function __construct($config, $eventemitter)
+    public function __construct($dic)
     {
+        $this->dic = $dic;
         $this->dbus = new \DBus(\Dbus::BUS_SESSION, true);
         $this->proxy = $this->dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
 
         $this->proxy->Invoke("NAME SKYBOT");
         $this->proxy->Invoke("PROTOCOL 7");
 
-    	$this->botname = $config->getSkypeName();
-        $this->eventemitter = $eventemitter;
-        $this->config = $config;
+    	$this->botname = $dic['config']->getSkypeName();
         $this->timestamp = time();
+
+        $dic['log']->addInfo("Starting Skybot as ".$this->botname);
     }
     
     public function getEventEmitter()
     {
-        return $this->eventemitter;
+        return $this->dic['eventemitter'];
     }
 
     public function getProxy()
@@ -74,13 +73,13 @@ class Skype
 
             $this->messages[$msgid] = true;
 
-            $msg = new Message($msgid, $chatid, $this);
+            $msg = new Message($msgid, $chatid, $this->dic);
             
-            if ($msg->getSkypeName() == $this->config->getSkypeName() or $msg->getTimestamp() <= $this->timestamp or $msg->isEmpty()) {
+            if ($msg->getSkypeName() == $this->dic['config']->getSkypeName() or $msg->getTimestamp() <= $this->timestamp or $msg->isEmpty()) {
                 continue;
             }            
 
-            $this->eventemitter->emit('skype.message', array($msg));
+            $this->dic['eventemitter']->emit('skype.message', array($msg));
 
             $msg->mark();
             $this->marked[$msgid] = true;            

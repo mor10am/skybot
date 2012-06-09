@@ -2,21 +2,20 @@
 
 class Skybot
 {
-	private $skype;
-	private $plugins;
+	private $dic;
 
-	public function __construct($skype, $plugins)
+	public function __construct(\Pimple $dic)
 	{
-		$this->skype = $skype;
-		$this->plugins = $plugins;
+		$this->dic = $dic;
 	}	
 
 	public function run()
 	{
 		do {
-		    $this->skype->handleChatMessages();
+		    $this->dic['skype']->handleChatMessages();
 
-		    $this->skype->waitLoop(1000);
+		    $this->dic['skype']->waitLoop(1000);
+
 		} while(true);		
 	}
 }

@@ -9,17 +9,15 @@ use Skybot\Plugin;
 class PluginContainer
 {
 	private $plugins = array();
-	private $config;
-	private $eventemitter;
+	private $dic;	
 
-	public function __construct($config, $eventemitter)
+	public function __construct(\Pimple $dic)
 	{
-		$this->config = $config;
-		$this->eventemitter = $eventemitter;
+		$this->dic = $dic;
 
-		$plugincontainer = $this;
+		$dic['eventemitter']->on('skype.message', function(Message $chatmsg) use ($dic) {
 
-		$eventemitter->on('skype.message', function(Message $chatmsg) use ($plugincontainer) {
+			$plugincontainer = $dic['plugincontainer'];
 
 			if (!$chatmsg->isMarked()) {
 				foreach ($plugincontainer->getPlugins() as $plugin) {

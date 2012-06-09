@@ -10,29 +10,29 @@ class Message
     private $skypename;
     private $chatid;
     private $marked = false;
-    private $skype;
+    private $dic;
 
-    public function __construct($msgid = null, $chatid = null, $skype = null)
+    public function __construct($msgid = null, $chatid = null, \Pimple $dic = null)
     {
         $this->messageid = $msgid;
         $this->chatid = $chatid;
-        $this->skype = $skype;
+        $this->dic = $dic;
 
-        if ($skype) {
-            $result = $skype->invoke("GET CHATMESSAGE $msgid BODY");
+        if ($dic and $dic['skype']) {
+            $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid BODY");
 
             $template = "CHATMESSAGE $msgid BODY ";
-            $this->body = trim(str_replace($template, "", $result));
+            $this->setBody(trim(str_replace($template, "", $result)));
 
-            $result = $skype->invoke("GET CHATMESSAGE $msgid TIMESTAMP");
+            $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid TIMESTAMP");
 
             $template = "CHATMESSAGE $msgid TIMESTAMP ";
             $this->timestamp = trim(str_replace($template, "", $result));        
 
-            $result = $skype->invoke("GET CHATMESSAGE $msgid FROM_HANDLE");
+            $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid FROM_HANDLE");
 
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
-            $this->skypename = trim(str_replace($template, "", $result));  
+            $this->setSkypeName(trim(str_replace($template, "", $result)));  
         }      
     }
 
@@ -43,7 +43,7 @@ class Message
 
     public function setBody($msg)
     {
-        $this->body = $msg;
+        $this->body = $msg;        
     }
 
     public function setSkypeName($handle)
@@ -60,11 +60,6 @@ class Message
     {
         return $this->timestamp;
     }
-    
-    public function getSkype()
-    {
-        return $this->skype;
-    }
 
     public function isEmpty()
     {
@@ -79,7 +74,7 @@ class Message
     public function mark()
     {
         $this->marked = true;
-        $this->skype->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
+        $this->dic['skype']->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
     }
 
     public function isMarked()
@@ -87,12 +82,12 @@ class Message
         return $this->marked;
     }
 
-    public function reply($msg)
+    public function reply($txt)
     {
-        if ($this->skype) {
-            $this->skype->invoke("CHATMESSAGE {$this->chatid} ".$msg);
-        } else {
-            echo $msg."\n";
+        if ($this->dic['skype']) {
+            $this->dic['skype']->invoke("CHATMESSAGE {$this->chatid} ".$txt);
         }
+
+        $this->dic['log']->addInfo("Skybot to ".$this->getSkypeName(). " : ".$txt);
     }
 }

@@ -10,9 +10,9 @@ class Ping extends BasePlugin implements PluginInterface
 	protected $regexp = "/^ping$/";
 	protected $description = "Answers a 'ping' with a 'pong'";
 
-	public function handle($result, $skypename)
+	public function handle($result, $message)
 	{
-		$this->reply("Yo! Pong to you " . $skypename . "!");			
+		$message->reply("Yo! Pong to you " . $message->getSkypeName() . "!");			
 
 		return true;
 	}

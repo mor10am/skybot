@@ -2,7 +2,9 @@
 
 namespace Skybot;
 
+use Skybot\Skype\Message;
+
 interface PluginInterface
 {
-	function handle($result, $skypename);
+	function handle($result, $message);
 }

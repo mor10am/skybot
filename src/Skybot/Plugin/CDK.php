@@ -4,13 +4,14 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
+use Skybot\Skype\Message;
 
 class CDK extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^cdk\ ([0-9]+)$/";
-	protected $description = "Get customerinfo from KAS";
+	protected $description = "Get customerinfo from KAS CRM system.";
 
-	public function handle($result, $skypename)
+	public function handle($result, $message)
 	{
 		$customerid = $result[1];
 
@@ -24,7 +25,7 @@ class CDK extends BasePlugin implements PluginInterface
 				$text .= $field ." = " . $value . "\n";
 			}
 
-			$this->reply($text);
+			$message->reply($text);
 
 		} else {
 			throw new \Exception("Customer $customerid not found.");
