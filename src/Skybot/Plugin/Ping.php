@@ -7,12 +7,18 @@ use Skybot\PluginInterface;
 
 class Ping extends BasePlugin implements PluginInterface
 {
-	protected $regexp = "/^ping$/";
+	protected $regexp = "/^ping( me)?$/";
 	protected $description = "Answers a 'ping' with a 'pong'";
 
 	public function handle($result, $message)
 	{
-		$message->reply("Yo! Pong to you " . $message->getSkypeName() . "!");			
+		if (isset($result[1]) and trim($result[1]) == 'me') {
+			$dm = true;
+		} else {
+			$dm = false;
+		}
+
+		$message->reply("Yo! Pong to you " . $message->getSkypeName() . "!", $dm);			
 
 		return true;
 	}

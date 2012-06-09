@@ -10,6 +10,7 @@ abstract class BasePlugin
 	protected $dic;
 	protected $regexp;
 	protected $description;
+	protected $result;
 
 	public function __construct(\Pimple $dic = null)
 	{
@@ -21,10 +22,19 @@ abstract class BasePlugin
 		if (!$this->regexp) return false;
 		if (!$matches = preg_match($this->regexp, $message->getBody(), $result)) return false;
 		
-		$this->dic['log']->addInfo($message->getSkypeName()." to Skybot : ".$message->getBody());
+		$this->result = $result;
+
+		if ($this->dic['log']) {
+			$this->dic['log']->addInfo($message->getSkypeName()." to Skybot : ".$message->getBody());
+		}
 
 		return $this->handle($result, $message);
 	}	
+
+	public function getResult()
+	{
+		return $this->result;
+	}
 
 	public function getRegExp()
 	{

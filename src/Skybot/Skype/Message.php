@@ -82,12 +82,10 @@ class Message
         return $this->marked;
     }
 
-    public function reply($txt)
+    public function reply($txt, $dm = false)
     {
         if ($this->dic['skype']) {
-            $this->dic['skype']->invoke("CHATMESSAGE {$this->chatid} ".$txt);
+            $this->dic['skype']->reply($this, $txt, $dm);            
         }
-
-        $this->dic['log']->addInfo("Skybot to ".$this->getSkypeName(). " : ".$txt);
     }
 }

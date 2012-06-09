@@ -14,6 +14,8 @@ class Skype
     public $messages = array();
     public $marked = array();
     
+    public $personalchats = array();
+
     public function __construct($dic)
     {
         $this->dic = $dic;
@@ -90,4 +92,33 @@ class Skype
     {
         $this->dbus->waitLoop($millisec);
     } 
+
+    public function reply(Message $message, $txt, $dm = false)
+    {
+        if ($dm) {
+            $this->directMessage($message, $txt);
+        } else {
+            $this->dic['skype']->invoke("CHATMESSAGE ".$message->getChatId()." ".$txt);
+            $this->dic['log']->addInfo("Skybot reply to ".$message->getSkypeName(). " : ".$txt);
+        }
+    }
+
+    public function directMessage(Message $message, $txt)
+    {
+        if (!isset($this->personalchats[$message->getSkypeName()])) {
+            $result = $this->dic['skype']->invoke("CHAT CREATE ".$message->getSkypeName());
+
+            $tmp = explode(' ', $result);
+
+            if (isset($tmp[1])) {
+                $chatid = $tmp[1];
+                $this->personalchats[$message->getSkypeName()] = $chatid;
+            }
+        } else {
+            $chatid = $this->personalchats[$message->getSkypeName()];
+        }
+
+        $this->dic['skype']->invoke("CHATMESSAGE ".$chatid." ".$txt);
+        $this->dic['log']->addInfo("Skybot DM to ".$message->getSkypeName(). " : ".$txt);
+    }
 }
