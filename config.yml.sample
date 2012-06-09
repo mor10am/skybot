@@ -1,0 +1,3 @@
+skybot:
+  skypename: "<skybot skypename>"
+  plugin_dir: "<full path to plugins>"

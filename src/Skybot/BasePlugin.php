@@ -24,7 +24,7 @@ abstract class BasePlugin
 		
 		$this->currentmsg = $message;
 		
-		$res = $this->handle($result, $message->getHandle());
+		$res = $this->handle($result, $message->getSkypeName());
 
 		$this->currentmsg = null;
 

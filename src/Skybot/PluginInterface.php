@@ -4,5 +4,5 @@ namespace Skybot;
 
 interface PluginInterface
 {
-	function handle($result, $handle);
+	function handle($result, $skypename);
 }

@@ -7,7 +7,7 @@ class Message
     private $messageid;
     private $body;
     private $timestamp;
-    private $handle;
+    private $skypename;
     private $chatid;
     private $marked = false;
     private $skype;
@@ -32,7 +32,7 @@ class Message
             $result = $skype->invoke("GET CHATMESSAGE $msgid FROM_HANDLE");
 
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
-            $this->handle = trim(str_replace($template, "", $result));  
+            $this->skypename = trim(str_replace($template, "", $result));  
         }      
     }
 
@@ -46,14 +46,14 @@ class Message
         $this->body = $msg;
     }
 
-    public function setHandle($handle)
+    public function setSkypeName($handle)
     {
-        $this->handle = $handle;
+        $this->skypename = $handle;
     }
 
-    public function getHandle()
+    public function getSkypeName()
     {
-        return $this->handle;        
+        return $this->skypename;        
     }
 
     public function getTimestamp()

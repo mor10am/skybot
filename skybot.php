@@ -2,20 +2,35 @@
 
 $loader = require_once 'vendor/autoload.php';
 
-$dbus = new DBus(Dbus::BUS_SESSION, true);
-$proxy = $dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
+use Symfony\Component\Finder\Finder;
 
-$proxy->Invoke("NAME SKYBOT");
-$proxy->Invoke("PROTOCOL 7");
+try {
+	$config = new \Skybot\Config(__DIR__."/config.yml");	
+
+} catch (Exception $e) {
+	die($e->getMessage()."\n");
+}
 
 $eventemitter = new Evenement\EventEmitter();
 
-$skype = new \Skybot\Skype('morten_amundsen', $proxy, $eventemitter);
+$skype = new \Skybot\Skype($config, $eventemitter);
 
-$plugins = new \Skybot\PluginContainer($eventemitter, $skype);
+$plugins = new \Skybot\PluginContainer($config, $eventemitter);
 
-do {
-    $skype->searchAndEmitChatMessages();
+$finder = new Finder();
+$finder->files()->in($config->getPluginDir())->name("*.php");
 
-    $dbus->waitLoop(1000);
-} while(true);
+foreach ($finder as $file) {
+	$classname = "Skybot\\Plugin\\".basename($file->getFileName(), ".php");
+
+	if (in_array("Skybot\\PluginInterface", class_implements($classname))) {
+		$plugin = new $classname($skype);
+
+		if ($plugin instanceof BasePlugin) {
+			$plugins->add($plugin);
+		}
+	} 	
+}
+
+$skybot = new \Skybot($skype, $plugins);
+$skybot->run();

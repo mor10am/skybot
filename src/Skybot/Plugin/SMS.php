@@ -10,7 +10,7 @@ class SMS extends BasePlugin implements PluginInterface
 	protected $regexp = "/^sms\ (\d{8})\ (.*)/";
 	protected $description = "Send SMS";
 
-	public function handle($result, $handle)
+	public function handle($result, $skypename)
 	{
 		$number = $result[1];
 		$message = trim($result[2]);

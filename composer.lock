@@ -1,5 +1,5 @@
 {
-    "hash": "fc71a8f3b28922ad91a1083e1ae64050",
+    "hash": "59fd43a3d2ae82181920811adf33c487",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -10,6 +10,11 @@
             "package": "symfony/finder",
             "version": "2.0.x-dev",
             "source-reference": "v2.0.15"
+        },
+        {
+            "package": "symfony/yaml",
+            "version": "2.0.x-dev",
+            "source-reference": "7eb70264627e696aa7d2825a88d7cef053e8a302"
         }
     ],
     "packages-dev": null,

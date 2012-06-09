@@ -10,7 +10,7 @@ class CDK extends BasePlugin implements PluginInterface
 	protected $regexp = "/^cdk\ ([0-9]+)$/";
 	protected $description = "Get customerinfo from KAS";
 
-	public function handle($result, $handle)
+	public function handle($result, $skypename)
 	{
 		$customerid = $result[1];
 

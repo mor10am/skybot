@@ -6,18 +6,27 @@ use Skybot\Skype\Message;
 
 class Skype
 {
-    public $timestamp;
-    public $botname;    
+    public $dbus;  
     public $proxy;
+
+    public $timestamp;
+    public $botname;  
     public $eventemitter;
+    public $config;
     public $messages = array();
     public $marked = array();
     
-    public function __construct($botname, $proxy, $eventemitter)
+    public function __construct($config, $eventemitter)
     {
-    	$this->botname = $botname;
-        $this->proxy = $proxy;
+        $this->dbus = new \DBus(\Dbus::BUS_SESSION, true);
+        $this->proxy = $this->dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
+
+        $this->proxy->Invoke("NAME SKYBOT");
+        $this->proxy->Invoke("PROTOCOL 7");
+
+    	$this->botname = $config->getSkypeName();
         $this->eventemitter = $eventemitter;
+        $this->config = $config;
         $this->timestamp = time();
     }
     
@@ -39,7 +48,7 @@ class Skype
         return $response;
     }
 
-    public function searchAndEmitChatMessages()
+    public function handleChatMessages()
     {   
         $result = $this->invoke("SEARCH RECENTCHATS");
 
@@ -67,7 +76,7 @@ class Skype
 
             $msg = new Message($msgid, $chatid, $this);
             
-            if ($msg->getHandle() == $this->botname or $msg->getTimestamp() <= $this->timestamp or $msg->isEmpty()) {
+            if ($msg->getSkypeName() == $this->config->getSkypeName() or $msg->getTimestamp() <= $this->timestamp or $msg->isEmpty()) {
                 continue;
             }            
 
@@ -76,5 +85,10 @@ class Skype
             $msg->mark();
             $this->marked[$msgid] = true;            
         }         
-    }    
+    }   
+
+    public function waitLoop($millisec)
+    {
+        $this->dbus->waitLoop($millisec);
+    } 
 }
