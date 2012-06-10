@@ -1,5 +1,9 @@
 <?php
 
+if (!extension_loaded('dbus')) {
+	die("Skybot requires the DBus extension.\nInstall by doing 'pecl install dbus'\n");
+}
+
 $loader = require_once 'vendor/autoload.php';
 
 use Symfony\Component\Finder\Finder;
