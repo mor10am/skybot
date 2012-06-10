@@ -18,9 +18,14 @@ class PluginContainer
 		if (isset($dic['eventemitter'])) {
 			$dic['eventemitter']->on('skype.message', function(Message $chatmsg) use ($dic) {
 
-				$plugincontainer = $dic['plugincontainer'];
-
 				if (!$chatmsg->isMarked()) {
+
+					$plugincontainer = $dic['plugincontainer'];
+
+					if (preg_match("/^plugins$/", $chatmsg->getBody())) {
+						return $plugincontainer->builtinListPlugins($chatmsg);						
+					}
+
 					foreach ($plugincontainer->getPlugins() as $plugin) {
 						try {
 							if ($plugin->parse($chatmsg)) break;				
@@ -31,6 +36,23 @@ class PluginContainer
 				}	
 			});
 		}
+	}
+
+	public function builtinListPlugins(Message $chatmsg)
+	{
+		$dic = $chatmsg->getDic();
+		$plugins = $dic['plugincontainer']->getPlugins();
+
+		$txt = "\r\nAvailable plugins:\r\n\r\n";
+
+		$i = 1;
+
+		foreach ($plugins as $plugin) {
+			$txt .= $i.") ".$plugin->getDescription()." (".$plugin->getRegexp().")\r\n";
+			$i++;
+		}
+
+		$chatmsg->reply($txt, true);					
 	}
 
 	public function add(PluginInterface $plugin)
