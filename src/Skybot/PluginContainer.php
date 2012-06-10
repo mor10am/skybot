@@ -4,6 +4,7 @@ namespace Skybot;
 
 use Skybot\Skype;
 use Skybot\Skype\Message;
+use Skybot\Skype\Reply;
 use Skybot\Plugin;
 
 class PluginContainer
@@ -28,9 +29,14 @@ class PluginContainer
 
 					foreach ($plugincontainer->getPlugins() as $plugin) {
 						try {
-							if ($plugin->parse($chatmsg)) break;				
+							$reply = $plugin->parse($chatmsg);
+							
+							if ($reply instanceof Reply) {
+								$chatmsg->reply($reply);
+								break;
+							}
 						} catch (\Exception $e) {
-							$chatmsg->reply($e->getMessage());
+							$chatmsg->reply(new Reply($e->getMessage()));
 						}
 					}
 				}	
@@ -52,7 +58,7 @@ class PluginContainer
 			$i++;
 		}
 
-		$chatmsg->reply($txt, true);					
+		$chatmsg->reply(new Reply($chatmsg, $txt, true));
 	}
 
 	public function add(PluginInterface $plugin)

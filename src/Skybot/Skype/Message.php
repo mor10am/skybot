@@ -2,6 +2,8 @@
 
 namespace Skybot\Skype;
 
+use Skybot\Skype\Reply;
+
 class Message
 {
     private $messageid;
@@ -87,12 +89,12 @@ class Message
         return $this->marked;
     }
 
-    public function reply($txt, $dm = false)
+    public function reply(Reply $reply)
     {
         if (isset($this->dic['skype'])) {
-            $this->dic['skype']->reply($this, $txt, $dm);            
+            $this->dic['skype']->reply($reply);            
         } else {
-            echo $txt."\n";
+            echo $reply->getBody()."\n";
         }
     }
 }

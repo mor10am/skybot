@@ -3,6 +3,8 @@
 namespace Skybot;
 
 use Skybot\Skype\Message;
+use Skybot\Skype\Reply;
+use Skybot\Skype\DirectMessage;
 
 class Skype
 {
@@ -93,32 +95,32 @@ class Skype
         $this->dbus->waitLoop($millisec);
     } 
 
-    public function reply(Message $message, $txt, $dm = false)
+    public function reply(Reply $reply)
     {
-        if ($dm) {
-            $this->directMessage($message, $txt);
+        if ($reply->isDM()) {
+            $this->directMessage($reply->createDirectMessage());
         } else {
-            $this->dic['skype']->invoke("CHATMESSAGE ".$message->getChatId()." ".$txt);
-            $this->dic['log']->addInfo("Skybot reply to ".$message->getSkypeName(). " : ".$txt);
+            $this->dic['skype']->invoke("CHATMESSAGE ".$reply->getChatMsg()->getChatId()." ".$reply->getBody());
+            $this->dic['log']->addInfo("Skybot reply to ".$reply->getSkypeName(). " : ".$reply->getBody());
         }
     }
 
-    public function directMessage(Message $message, $txt)
+    public function directMessage(DirectMessage $dm)
     {
-        if (!isset($this->personalchats[$message->getSkypeName()])) {
-            $result = $this->dic['skype']->invoke("CHAT CREATE ".$message->getSkypeName());
+        if (!isset($this->personalchats[$dm->getSkypeName()])) {
+            $result = $this->dic['skype']->invoke("CHAT CREATE ".$dm->getSkypeName());
 
             $tmp = explode(' ', $result);
 
             if (isset($tmp[1])) {
                 $chatid = $tmp[1];
-                $this->personalchats[$message->getSkypeName()] = $chatid;
+                $this->personalchats[$dm->getSkypeName()] = $chatid;
             }
         } else {
-            $chatid = $this->personalchats[$message->getSkypeName()];
+            $chatid = $this->personalchats[$dm->getSkypeName()];
         }
 
-        $this->dic['skype']->invoke("CHATMESSAGE ".$chatid." ".$txt);
-        $this->dic['log']->addInfo("Skybot DM to ".$message->getSkypeName(). " : ".$txt);
+        $this->dic['skype']->invoke("CHATMESSAGE ".$chatid." ".$dm->getBody());
+        $this->dic['log']->addInfo("Skybot DM to ".$dm->getSkypeName(). " : ".$dm->getBody());
     }
 }

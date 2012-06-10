@@ -4,6 +4,7 @@ namespace Skybot;
 
 use Skybot\Skype;
 use Skybot\Skype\Message;
+use Skybot\Skype\Reply;
 
 abstract class BasePlugin
 {
@@ -17,20 +18,18 @@ abstract class BasePlugin
 		$this->dic = $dic;
 	}
 
-	public function parse(Message $message)
+	public function parse(Message $chatmsg)
 	{		
 		if (!$this->regexp) return false;
-		if (!$matches = preg_match($this->regexp, $message->getBody(), $result)) return false;
+		if (!$matches = preg_match($this->regexp, $chatmsg->getBody(), $result)) return false;
 		
 		$this->result = $result;
 
 		if ($this->dic['log']) {
-			$this->dic['log']->addInfo($message->getSkypeName()." to Skybot : ".$message->getBody());
+			$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
 		}
 
-		$this->handle($result, $message);
-
-		return true;
+		return $this->handle($result, $chatmsg);
 	}	
 
 	public function getResult()
