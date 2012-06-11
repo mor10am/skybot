@@ -39,8 +39,12 @@ class Skype extends EventEmitter
 
         $port = $dic['config']->getServerPort();
 
-        $this->socket = socket_create_listen($port);
-        socket_set_nonblock($this->socket);
+        if ($port and is_numeric($port)) {
+            $this->socket = socket_create_listen($port);
+            socket_set_nonblock($this->socket);
+        } else {
+            $port = "<NO PORT>";
+        }
 
         $dic['log']->addInfo("Starting Skybot as ".$this->botname." and listening on port $port");
     }
@@ -115,6 +119,8 @@ class Skype extends EventEmitter
 
     private function _getMessagesFromPort()
     {
+        if (!is_resource($this->socket)) return true;
+
         if (($client = @socket_accept($this->socket)) !== false) {
             $this->clients[] = $client;
         }

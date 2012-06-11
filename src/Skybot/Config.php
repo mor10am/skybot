@@ -53,9 +53,6 @@ class Config
 
         if (isset($config['skybot']['server_port'])) {
             $this->server_port = $config['skybot']['server_port'];
-            if (!$this->server_port) {
-                throw new \Exception("Server port is blank.");
-            }
         } else {
             throw new \Exception("The config skybot.server_port is missing!");
         }
