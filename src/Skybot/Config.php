@@ -9,6 +9,7 @@ class Config
 	public $skypename;
 	public $plugin_dir;
     public $log_dir;
+    public $server_port;
 
 	public function __construct($filename)
 	{
@@ -50,6 +51,15 @@ class Config
             throw new \Exception("The config skybot.log_dir is missing!");
         }
 
+        if (isset($config['skybot']['server_port'])) {
+            $this->server_port = $config['skybot']['server_port'];
+            if (!$this->server_port) {
+                throw new \Exception("Server port is blank.");
+            }
+        } else {
+            throw new \Exception("The config skybot.server_port is missing!");
+        }
+
     }
 
     public function getSkypeName()
@@ -66,4 +76,9 @@ class Config
     {
         return $this->log_dir;
     }    
+
+    public function getServerPort()
+    {
+        return $this->server_port;
+    }
 }

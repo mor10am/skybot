@@ -18,8 +18,12 @@ class Skype extends EventEmitter
     public $messages = array();
     public $marked = array();
     public $calls = array();
-
     public $personalchats = array();
+    public $chatnames = array();
+
+    private $clients = array();
+    private $socket;
+
 
     public function __construct($dic)
     {
@@ -33,7 +37,12 @@ class Skype extends EventEmitter
     	$this->botname = $dic['config']->getSkypeName();
         $this->timestamp = time();
 
-        $dic['log']->addInfo("Starting Skybot as ".$this->botname);
+        $port = $dic['config']->getServerPort();
+
+        $this->socket = socket_create_listen($port);
+        socket_set_nonblock($this->socket);
+
+        $dic['log']->addInfo("Starting Skybot as ".$this->botname." and listening on port $port");
     }
 
     public function getProxy()
@@ -53,11 +62,11 @@ class Skype extends EventEmitter
     {   
         $this->_refuseCalls();
 
-        $result = $this->invoke("SEARCH RECENTCHATS");
+        $this->_getMessagesFromPort();
 
-        $chats = explode(", ", substr($result, 6));
+        $chats = $this->_getRecentChats();
 
-        if (!count($chats)) return true;
+        if (!count($chats)) return false;
 
         foreach ($chats as $chatid) {
             $this->loadAndEmitChatMessages($chatid);
@@ -90,10 +99,80 @@ class Skype extends EventEmitter
         }         
     }   
 
+    private function _getRecentChats()
+    {
+        $result = $this->invoke("SEARCH RECENTCHATS");
+
+        $chats = explode(", ", substr($result, 6));
+        
+        return $chats;    
+    }
+
     public function waitLoop($millisec)
     {
         $this->dbus->waitLoop($millisec);
     } 
+
+    private function _getMessagesFromPort()
+    {
+        if (($client = @socket_accept($this->socket)) !== false) {
+            $this->clients[] = $client;
+        }
+
+        if (!count($this->clients)) return true;
+
+        $r = $this->clients;
+        $w = NULL;
+        $e = $this->clients;
+
+        socket_select($r, $w, $e, 0, 500);
+
+        if (count($e)) {
+            $this->clients = array_diff($this->clients, $e);
+        }
+    
+        foreach ($r as $client) {
+            $bytes = socket_recv($client, $txt, 1024, MSG_DONTWAIT);
+            if (!$bytes) continue;
+
+            if (!preg_match("/\[(\w{1,})\]\[(\w{1,})\] (.*)/", $txt, $matches)) continue;
+
+            $chatname = strtolower(trim($matches[1]));
+            $skypename = trim($matches[2]);
+            $body = $matches[3];
+
+            if (isset($this->chatnames[$chatname])) {
+                $chatid = $this->chatnames[$chatname];
+            } else {
+                $chats = $this->_getRecentChats();
+
+                if (!count($chats)) continue;
+
+                $chatid = false;
+
+                foreach ($chats as $cid) {
+                    $result = $this->invoke("GET CHAT $cid FRIENDLYNAME");
+
+                    $friendlyname = strtolower(trim(str_replace("CHAT $cid FRIENDLYNAME", "", $result)));
+
+                    $this->chatnames[$friendlyname] = $cid;
+
+                    if ($friendlyname == $chatname) {
+                        $chatid = $cid;
+                        break;
+                    }                    
+                }
+
+                if (!$chatid) continue;
+            }    
+
+            $msg = new Message(null, $chatid, $this->dic);
+            $msg->setBody($body);
+            $msg->setSkypeName($skypename);
+
+            $this->emit('skype.message', array($msg));
+        }
+    }
 
     public function reply(Reply $reply)
     {

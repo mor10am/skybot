@@ -14,7 +14,7 @@ class Skybot
 		do {
 		    $this->dic['skype']->handleChatMessages();
 
-		    $this->dic['skype']->waitLoop(1000);
+		    $this->dic['skype']->waitLoop(500);
 
 		} while(true);		
 	}

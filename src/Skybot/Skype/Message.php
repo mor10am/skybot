@@ -20,7 +20,7 @@ class Message
         $this->chatid = $chatid;
         $this->dic = $dic;
 
-        if ($dic and isset($dic['skype'])) {
+        if ($msgid and $dic and isset($dic['skype'])) {
             $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid BODY");
 
             $template = "CHATMESSAGE $msgid BODY ";
@@ -81,7 +81,10 @@ class Message
     public function mark()
     {
         $this->marked = true;
-        $this->dic['skype']->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
+        
+        if ($this->messageid) {
+            $this->dic['skype']->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
+        }
     }
 
     public function isMarked()
