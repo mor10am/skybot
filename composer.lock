@@ -1,5 +1,5 @@
 {
-    "hash": "75b85df475210b0278ddd459fd85c6dd",
+    "hash": "75d29c232410c3d6f8bbdf4417fbb519",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -13,7 +13,13 @@
         {
             "package": "pimple/pimple",
             "version": "dev-master",
-            "source-reference": "v1.0.0"
+            "alias-pretty-version": "1.0.x-dev",
+            "alias-version": "1.0.9999999.9999999-dev"
+        },
+        {
+            "package": "pimple/pimple",
+            "version": "dev-master",
+            "source-reference": "5bd96492f13a09210b3f62a8c2c5179716033e2c"
         },
         {
             "package": "symfony/finder",
@@ -23,7 +29,7 @@
         {
             "package": "symfony/yaml",
             "version": "2.0.x-dev",
-            "source-reference": "7eb70264627e696aa7d2825a88d7cef053e8a302"
+            "source-reference": "c123857e83b279a4a1300ef27cc8cc25d8ea84f9"
         }
     ],
     "packages-dev": null,
