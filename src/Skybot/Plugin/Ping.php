@@ -11,14 +11,8 @@ class Ping extends BasePlugin implements PluginInterface
 	protected $regexp = "/^ping( me)?$/";
 	protected $description = "Answers a 'ping' with a 'pong'";
 
-	public function handle($result, $chatmsg)
+	public function handle($result, $chatmsg, $dm = false)
 	{
-		if (isset($result[1]) and trim($result[1]) == 'me') {
-			$dm = true;
-		} else {
-			$dm = false;
-		}
-
 		return new Reply($chatmsg, "Yo! Pong to you " . $chatmsg->getSkypeName() . "!", $dm);			
 	}
 }

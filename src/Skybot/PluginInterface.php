@@ -6,5 +6,5 @@ use Skybot\Skype\Message;
 
 interface PluginInterface
 {
-	function handle($result, $chatmsg);
+	function handle($result, $chatmsg, $dm = false);
 }

@@ -25,11 +25,17 @@ abstract class BasePlugin
 		
 		$this->result = $result;
 
+		$dm = false;
+
+		if (isset($result[1]) and trim($result[1]) == 'me') {
+			$dm = true;
+		}
+
 		if ($this->dic['log']) {
 			$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
 		}
 
-		return $this->handle($result, $chatmsg);
+		return $this->handle($result, $chatmsg, $dm);
 	}	
 
 	public function getResult()
