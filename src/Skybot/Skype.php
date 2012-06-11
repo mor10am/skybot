@@ -17,7 +17,8 @@ class Skype extends EventEmitter
     public $botname;  
     public $messages = array();
     public $marked = array();
-    
+    public $calls = array();
+
     public $personalchats = array();
 
     public function __construct($dic)
@@ -50,6 +51,8 @@ class Skype extends EventEmitter
 
     public function handleChatMessages()
     {   
+        $this->_refuseCalls();
+
         $result = $this->invoke("SEARCH RECENTCHATS");
 
         $chats = explode(", ", substr($result, 6));
@@ -119,5 +122,25 @@ class Skype extends EventEmitter
 
         $this->dic['skype']->invoke("CHATMESSAGE ".$chatid." ".$dm->getBody());
         $this->dic['log']->addInfo("Skybot DM to ".$dm->getSkypeName(). " : ".$dm->getBody());
+    }
+
+    private function _refuseCalls()
+    {
+        $result = $this->invoke("SEARCH CALLS");
+        $calls = explode(", ", substr($result, 6));
+
+        foreach ($calls as $callid) {
+            if (isset($this->calls[$callid])) continue;
+            $this->calls[$callid] = true;
+
+            $result = $this->invoke("GET CALL $callid STATUS");
+            $t = explode(' ', $result);
+
+            $status = $t[3];
+
+            if ($status == 'RINGING' or $status == 'INPROGRESS' or $status == 'ONHOLD') {
+                $this->invoke("ALTER CALL $callid END HANGUP");                
+            }
+        }        
     }
 }
