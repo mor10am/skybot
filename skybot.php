@@ -17,6 +17,8 @@ try {
 	die($e->getMessage()."\n");
 }
 
+$loader->add('Skybot\\Plugin', $config->getPluginDir());
+
 $log = new Logger('skybot');
 $log->pushHandler(new StreamHandler($config->getLogDir()."/".date('Ymd').".log", Logger::DEBUG));
 
@@ -38,7 +40,11 @@ $finder->files()->in($config->getPluginDir())->name("*.php");
 foreach ($finder as $file) {
 	$classname = "Skybot\\Plugin\\".basename($file->getFileName(), ".php");
 
-	if (in_array("Skybot\\PluginInterface", class_implements($classname))) {
+	$implements = class_implements($classname);
+
+	if (!$implements) continue;
+
+	if (in_array("Skybot\\PluginInterface", $implements)) {
 		$plugin = new $classname($dic);
 
 		if ($plugin instanceof \Skybot\BasePlugin) {
