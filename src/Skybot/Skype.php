@@ -6,7 +6,9 @@ use Skybot\Skype\Message;
 use Skybot\Skype\Reply;
 use Skybot\Skype\DirectMessage;
 
-class Skype
+use Evenement\EventEmitter;
+
+class Skype extends EventEmitter
 {
     public $dbus;  
     public $proxy;
@@ -31,11 +33,6 @@ class Skype
         $this->timestamp = time();
 
         $dic['log']->addInfo("Starting Skybot as ".$this->botname);
-    }
-    
-    public function getEventEmitter()
-    {
-        return $this->dic['eventemitter'];
     }
 
     public function getProxy()
@@ -83,7 +80,7 @@ class Skype
                 continue;
             }            
 
-            $this->dic['eventemitter']->emit('skype.message', array($msg));
+            $this->emit('skype.message', array($msg));
 
             $msg->mark();
             $this->marked[$msgid] = true;            

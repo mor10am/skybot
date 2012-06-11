@@ -6,7 +6,7 @@ class Skybot
 
 	public function __construct(\Pimple $dic)
 	{
-		$this->dic = $dic;
+		$this->dic = $dic;		
 	}	
 
 	public function run()

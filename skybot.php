@@ -9,6 +9,7 @@ $loader = require_once 'vendor/autoload.php';
 use Symfony\Component\Finder\Finder;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Skybot\Skype\Message;
 
 try {
 	$config = new \Skybot\Config(__DIR__."/config.yml");	
@@ -23,7 +24,6 @@ $log = new Logger('skybot');
 $log->pushHandler(new StreamHandler($config->getLogDir()."/".date('Ymd').".log", Logger::DEBUG));
 
 $dic = new \Pimple();
-$dic['eventemitter'] = $dic->share(function($c) { return new Evenement\EventEmitter(); });
 $dic['config'] = $config;
 $dic['log'] = $log;
 
@@ -33,6 +33,12 @@ $plugincontainer = new \Skybot\PluginContainer($dic);
 
 $dic['skype'] = $skype;
 $dic['plugincontainer'] = $plugincontainer;
+
+$skype->on('skype.message', function(Message $chatmsg) use ($plugincontainer) {
+	if (!$chatmsg->isMarked()) {
+		$plugincontainer->parseMessage($chatmsg);
+	}	
+});
 
 $finder = new Finder();
 $finder->files()->in($config->getPluginDir())->name("*.php");

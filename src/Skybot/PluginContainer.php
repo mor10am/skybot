@@ -15,33 +15,26 @@ class PluginContainer
 	public function __construct(\Pimple $dic)
 	{
 		$this->dic = $dic;
+	}
 
-		if (isset($dic['eventemitter'])) {
-			$dic['eventemitter']->on('skype.message', function(Message $chatmsg) use ($dic) {
-
-				if (!$chatmsg->isMarked()) {
-
-					$plugincontainer = $dic['plugincontainer'];
-
-					if (preg_match("/^plugins$/", $chatmsg->getBody())) {
-						return $plugincontainer->builtinListPlugins($chatmsg);						
-					}
-
-					foreach ($plugincontainer->getPlugins() as $plugin) {
-						try {
-							$reply = $plugin->parse($chatmsg);
-							
-							if ($reply instanceof Reply) {
-								$chatmsg->reply($reply);
-								break;
-							}
-						} catch (\Exception $e) {
-							$chatmsg->reply(new Reply($e->getMessage()));
-						}
-					}
-				}	
-			});
+	public function parseMessage(Message $chatmsg)
+	{
+		if (preg_match("/^plugins$/", $chatmsg->getBody())) {
+			return $this->builtinListPlugins($chatmsg);						
 		}
+
+		foreach ($this->getPlugins() as $plugin) {
+			try {
+				$reply = $plugin->parse($chatmsg);
+				
+				if ($reply instanceof Reply) {
+					$chatmsg->reply($reply);
+					break;
+				}
+			} catch (\Exception $e) {
+				$chatmsg->reply(new Reply($e->getMessage()));
+			}
+		}		
 	}
 
 	public function builtinListPlugins(Message $chatmsg)
