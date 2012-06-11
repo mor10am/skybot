@@ -19,6 +19,17 @@ class PluginContainer
 
 	public function parseMessage(Message $chatmsg)
 	{
+		if (preg_match("/^echo( me)? (.*)$/", $chatmsg->getBody(), $result)) {
+			$dm = false;
+
+			if (isset($result[1]) and trim($result[1]) == 'me') {
+				$dm = true;
+			}
+
+			return $chatmsg->reply(new Reply($chatmsg, $result[2], $dm));
+		}
+
+
 		if (preg_match("/^plugins$/", $chatmsg->getBody())) {
 			return $this->builtinListPlugins($chatmsg);						
 		}
@@ -32,7 +43,7 @@ class PluginContainer
 					break;
 				}
 			} catch (\Exception $e) {
-				$chatmsg->reply(new Reply($e->getMessage()));
+				$chatmsg->reply(new Reply($chatmsg, $e->getMessage()));
 			}
 		}		
 	}
@@ -45,6 +56,14 @@ class PluginContainer
 		$txt = "\r\nAvailable plugins:\r\n\r\n";
 
 		$i = 1;
+
+		$txt .= $i.") List all plugins (/^plugins$/)\r\n";
+
+		$i++;
+
+		$txt .= $i.") Echo back the same text (/^echo( me)? (.*)$/)\r\n";
+
+		$i++;
 
 		foreach ($plugins as $plugin) {
 			$txt .= $i.") ".$plugin->getDescription()." (".$plugin->getRegexp().")\r\n";
