@@ -141,6 +141,12 @@ class Skype extends EventEmitter
             $bytes = socket_recv($client, $txt, 1024, MSG_DONTWAIT);
             if (!$bytes) continue;
 
+            socket_getpeername($client, $address, $port);
+
+            if ($this->dic['log']) {
+                $this->dic['log']->addWarning("Message from $address : $txt");
+            }
+
             if (!preg_match("/\[(\w{1,})\]\[(\w{1,})\] (.*)/", $txt, $matches)) continue;
 
             $chatname = strtolower(trim($matches[1]));
