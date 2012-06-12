@@ -45,8 +45,11 @@ abstract class BasePlugin
 
 			$this->dic['log']->addDebug($payload);
 
-			// config basedir
-			exec("/usr/bin/env php " . __DIR__ . "/../../async.php $payload &");
+			$cmd = "/usr/bin/daemon ".__DIR__ . "/../../async.php $payload";
+
+			$this->dic['log']->addDebug($cmd);
+			
+			exec($cmd, $retval);
 
 			return true;
 
