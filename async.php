@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 $loader = require_once 'vendor/autoload.php';
@@ -24,7 +25,13 @@ $dic['log'] = $log;
 
 $plugincontainer = new \Skybot\PluginContainer($dic);
 
-$chatmsg = unserialize(base64_decode($argv[1]));
+if (isset($argv[1])) {
+	$data = $argv[1];
+} else {
+	die("No data provided.\n");
+}
+
+$chatmsg = unserialize(base64_decode($data));
 $chatmsg->dic = $dic;
 
 $class = $chatmsg->plugin;
