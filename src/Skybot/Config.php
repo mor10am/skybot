@@ -11,6 +11,8 @@ class Config
     public $log_dir;
     public $server_port;
 
+    public $conf = array();
+
 	public function __construct($filename)
 	{
 		$this->_load($filename);
@@ -24,6 +26,8 @@ class Config
 
         $config = Yaml::parse($filename);
  
+        $this->conf = $config['skybot'];
+
         if (isset($config['skybot']['skypename'])) {
         	$this->skypename = $config['skybot']['skypename'];
         	if (!$this->skypename) {
@@ -57,6 +61,11 @@ class Config
             throw new \Exception("The config skybot.server_port is missing!");
         }
 
+    }
+
+    public function __get($field)
+    {
+        return $this->conf[$field];
     }
 
     public function getSkypeName()
