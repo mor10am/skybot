@@ -100,6 +100,8 @@ class Message
         } else {
             echo $reply->getBody()."\n";
         }
+
+        return true;
     }
 
     public function createAsyncMessage()
