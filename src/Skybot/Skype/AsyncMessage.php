@@ -25,15 +25,15 @@ class AsyncMessage
 
         $txt = "[".$reply->getChatId()."][".$skypename."] echo ".$reply->getBody();
 
-        $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-
-        if (!socket_connect($socket, '127.0.0.1', $port)) {
-            $this->dic['log']->addError(socket_strerror(socket_last_error()));
+        if (!$socket = fsockopen('127.0.0.1', $port, $errno, $errstr, 2)) {
+            $this->dic['log']->addError($errstr);
             return false;
         }
 
-        socket_write($socket, $txt, strlen($txt));
-        socket_close($socket);
+        fwrite($socket, $txt, strlen($txt));
+        fflush($socket);
+        fclose($socket);
+
         $socket = null;
 
         return true;         
