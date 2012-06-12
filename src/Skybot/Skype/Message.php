@@ -3,6 +3,7 @@
 namespace Skybot\Skype;
 
 use Skybot\Skype\Reply;
+use Skybot\Skype\AsyncMessage;
 
 class Message
 {
@@ -99,5 +100,15 @@ class Message
         } else {
             echo $reply->getBody()."\n";
         }
+    }
+
+    public function createAsyncMessage()
+    {
+        $msg = new AsyncMessage();
+        $msg->body = $this->body;
+        $msg->chatid = $this->chatid;
+        $msg->messageid = $this->messageid;
+        $msg->timestamp = $this->timestamp;
+        return $msg;
     }
 }

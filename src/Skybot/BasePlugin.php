@@ -12,6 +12,7 @@ abstract class BasePlugin
 	protected $regexp;
 	protected $description;
 	protected $result;
+	protected $async = false;
 
 	public function __construct(\Pimple $dic = null)
 	{
@@ -35,7 +36,23 @@ abstract class BasePlugin
 			$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
 		}
 
-		return $this->handle($result, $chatmsg, $dm);
+		if ($this->async) {
+			$asyncmsg = $chatmsg->createAsyncMessage();
+			$asyncmsg->result = $result;
+			$asyncmsg->plugin = get_class($this);
+
+			$payload = base64_encode(serialize($asyncmsg));
+
+			$this->dic['log']->addDebug($payload);
+
+			// config basedir
+			exec("/usr/bin/env php " . __DIR__ . "/../../async.php $payload &");
+
+			return true;
+
+		} else {
+			return $this->handle($result, $chatmsg, $dm);
+		}
 	}	
 
 	public function getResult()

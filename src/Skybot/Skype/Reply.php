@@ -11,13 +11,25 @@ class Reply
 	private $dm = false;
 	private $chatmsg;
 	private $skypename;
+	private $chatid;
 
-	public function __construct(Message $chatmsg, $body, $dm = false)
+	public function __construct($chatmsg, $body, $dm = false)
 	{
 		$this->chatmsg = $chatmsg;
+		$this->chatid = $chatmsg->getChatId();
 		$this->skypename = $chatmsg->getSkypeName();
 		$this->body = $body;
 		$this->dm = $dm;
+	}
+
+	public function setChatId($chatid)
+	{
+		$this->chatid = $chatid;
+	}
+
+	public function getChatId()
+	{
+		return $this->chatid;
 	}
 
 	public function getChatMsg()

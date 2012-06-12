@@ -147,11 +147,15 @@ class Skype extends EventEmitter
                 $this->dic['log']->addWarning("Message from $address : $txt");
             }
 
-            if (!preg_match("/\[(\w{1,})\]\[(\w{1,})\] (.*)/", $txt, $matches)) continue;
+            if (!preg_match("/\[(.{1,})\]\[(.{1,})\] (.*)/", $txt, $matches)) continue;        
 
             $chatname = strtolower(trim($matches[1]));
             $skypename = trim($matches[2]);
             $body = $matches[3];
+
+            if (substr($chatname, 0, 1) == '#') {
+                $this->chatnames[$chatname] = $chatname;
+            }
 
             if (isset($this->chatnames[$chatname])) {
                 $chatid = $this->chatnames[$chatname];

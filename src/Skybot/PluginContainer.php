@@ -38,6 +38,8 @@ class PluginContainer
 			try {
 				$reply = $plugin->parse($chatmsg);
 				
+				if ($reply === true) return true;
+
 				if ($reply instanceof Reply) {
 					$chatmsg->reply($reply);
 					break;
