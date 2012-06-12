@@ -24,6 +24,7 @@ class Skype extends EventEmitter
     private $clients = array();
     private $socket;
 
+    public $messages_served = 0;
 
     public function __construct($dic)
     {
@@ -192,6 +193,8 @@ class Skype extends EventEmitter
 
     public function reply(Reply $reply)
     {
+        $this->messages_served++;
+
         if ($reply->isDM()) {
             $this->directMessage($reply->createDirectMessage());
         } else {
