@@ -14,9 +14,10 @@ class Skype extends EventEmitter
     public $proxy;
 
     public $timestamp;
+    public $checkpoint;
+
     public $botname;  
     public $messages = array();
-    public $marked = array();
     public $calls = array();
     public $personalchats = array();
     public $chatnames = array();
@@ -37,6 +38,7 @@ class Skype extends EventEmitter
 
     	$this->botname = $dic['config']->getSkypeName();
         $this->timestamp = time();
+        $this->checkpoint = time();
 
         $port = $dic['config']->getServerPort();
 
@@ -76,6 +78,8 @@ class Skype extends EventEmitter
         foreach ($chats as $chatid) {
             $this->loadAndEmitChatMessages($chatid);
         }
+
+        $this->checkpoint = time();
     }    
 
     private function loadAndEmitChatMessages($chatid)
@@ -87,20 +91,19 @@ class Skype extends EventEmitter
         if (!count($messages)) return true;
 
         foreach ($messages as $msgid) {
-            if (isset($this->messages[$msgid]) or isset($this->marked[$msgid])) continue;
+            if (isset($this->messages[$msgid])) continue;
 
             $this->messages[$msgid] = true;
 
-            $msg = new Message($msgid, $chatid, $this->dic);
+            $chatmsg = new Message($msgid, $chatid, $this->dic);
             
-            if ($msg->getSkypeName() == $this->dic['config']->getSkypeName() or $msg->getTimestamp() <= $this->timestamp or $msg->isEmpty()) {
+            if ($chatmsg->getSkypeName() == $this->dic['config']->getSkypeName() or $chatmsg->getTimestamp() < $this->checkpoint or $chatmsg->isEmpty()) {
                 continue;
             }            
 
-            $this->emit('skype.message', array($msg));
+            $this->emit('skype.message', array($chatmsg));
 
-            $msg->mark();
-            $this->marked[$msgid] = true;            
+            $chatmsg->mark();                    
         }         
     }   
 
