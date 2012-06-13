@@ -11,19 +11,20 @@ class AsyncMessage
     public $chatid;
     public $result;
     public $plugin;
+    public $dm;
     public $dic;
 
-    public function reply(Reply $reply)
+    public function reply($txt)
     {
         $port = $this->dic['config']->getServerPort();
         
         if (!$port) return false;
 
-        if (!$skypename = $reply->getSkypeName()) {
-            $skypename = 'async';
+        if (!$this->skypename) {
+            $this->skypename = 'async';
         }
 
-        $txt = "[".$reply->getChatId()."][".$skypename."] echo ".$reply->getBody();
+        $txt = "[".$this->chatid."][".$this->skypename."] echo ".$txt;
 
         if (!$socket = fsockopen('127.0.0.1', $port, $errno, $errstr, 2)) {
             $this->dic['log']->addError($errstr);
@@ -39,6 +40,16 @@ class AsyncMessage
         return true;         
     }
 
+    public function setDM()
+    {
+        $this->dm = true;
+    }
+
+    public function isDM()
+    {
+        return $this->dm;
+    }    
+
     public function getSkypeName()
     {
         return $this->skypename;
@@ -47,6 +58,11 @@ class AsyncMessage
     public function getChatId()
     {
         return $this->chatid;
+    }
+
+    public function getBody()
+    {
+        return $this->body;
     }
 }
 

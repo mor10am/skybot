@@ -79,7 +79,7 @@ class Skype extends EventEmitter
             $this->loadAndEmitChatMessages($chatid);
         }
 
-        $this->checkpoint = time();
+        $this->checkpoint = time()-2;
     }    
 
     private function loadAndEmitChatMessages($chatid)

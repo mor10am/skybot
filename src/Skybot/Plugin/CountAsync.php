@@ -13,14 +13,14 @@ class CountAsync extends BasePlugin implements PluginInterface
 	protected $description = "Count for 10 seconds";
 	protected $async = true;
 
-	public function handle($result, $chatmsg, $dm = false)
+	public function handle($chatmsg, $result)
 	{		
 	}
 
 	public function handleAsync(AsyncMessage $chatmsg)
 	{		
 		for ($i = 1;$i < 10;$i++) {
-			$chatmsg->reply(new Reply($chatmsg, "async count $i"));
+			$chatmsg->reply("async count $i");
 			sleep(1);
 		}
 	}

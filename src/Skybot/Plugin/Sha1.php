@@ -11,8 +11,8 @@ class Sha1 extends BasePlugin implements PluginInterface
 	protected $regexp = "/^sha1( me)?\ (.*)$/";
 	protected $description = "Create a SHA1 hash of a string";
 
-	public function handle($result, $chatmsg, $dm = false)
+	public function handle($chatmsg, $result)
 	{
-		return new Reply($chatmsg, sha1($result[2]), $dm);			
+		$chatmsg->reply(sha1($result[2]));
 	}
 }

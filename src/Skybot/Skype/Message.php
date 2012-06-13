@@ -13,6 +13,7 @@ class Message
     private $skypename;
     private $chatid;
     private $marked = false;
+    private $dm = false;
     private $dic;
 
     public function __construct($msgid = null, $chatid = null, \Pimple $dic = null)
@@ -37,6 +38,16 @@ class Message
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
             $this->setSkypeName(trim(str_replace($template, "", $result)));  
         }      
+    }
+
+    public function setDM()
+    {
+        $this->dm = true;
+    }
+
+    public function isDM()
+    {
+        return $this->dm;
     }
 
     public function getDic()
@@ -93,10 +104,14 @@ class Message
         return $this->marked;
     }
 
-    public function reply(Reply $reply)
+    public function reply($txt)
     {
         if (isset($this->dic['skype'])) {
-            $this->dic['skype']->reply($reply);            
+            if ($txt instanceof Reply) {
+                $this->dic['skype']->reply($txt); 
+            } else {
+                $this->dic['skype']->reply(new Reply($this, $txt, $this->dm)); 
+            }
         } else {
             echo $reply->getBody()."\n";
         }
@@ -111,6 +126,8 @@ class Message
         $msg->chatid = $this->chatid;
         $msg->messageid = $this->messageid;
         $msg->timestamp = $this->timestamp;
+        $msg->skypename = $this->skypename;
+
         return $msg;
     }
 }

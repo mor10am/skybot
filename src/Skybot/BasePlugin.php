@@ -11,7 +11,6 @@ abstract class BasePlugin
 	protected $dic;
 	protected $regexp;
 	protected $description;
-	protected $result;
 	protected $async = false;
 
 	public function __construct(\Pimple $dic = null)
@@ -19,23 +18,8 @@ abstract class BasePlugin
 		$this->dic = $dic;
 	}
 
-	public function parse(Message $chatmsg)
+	public function run(Message $chatmsg, $result)
 	{		
-		if (!$this->regexp) return false;
-		if (!$matches = preg_match($this->regexp, $chatmsg->getBody(), $result)) return false;
-		
-		$this->result = $result;
-
-		$dm = false;
-
-		if (isset($result[1]) and trim($result[1]) == 'me') {
-			$dm = true;
-		}
-
-		if ($this->dic['log']) {
-			$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
-		}
-
 		if ($this->async) {
 			$asyncmsg = $chatmsg->createAsyncMessage();
 			$asyncmsg->result = $result;
@@ -43,7 +27,7 @@ abstract class BasePlugin
 
 			$payload = base64_encode(serialize($asyncmsg));
 
-			$this->dic['log']->addDebug($payload);
+			$this->dic['log']->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->skypename}");
 
 			$cmd = "/usr/bin/daemon ".__DIR__ . "/../../async.php $payload";
 
@@ -54,14 +38,9 @@ abstract class BasePlugin
 			return true;
 
 		} else {
-			return $this->handle($result, $chatmsg, $dm);
+			return $this->handle($chatmsg, $result);
 		}
 	}	
-
-	public function getResult()
-	{
-		return $this->result;
-	}
 
 	public function getRegExp()
 	{
