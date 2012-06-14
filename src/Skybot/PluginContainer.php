@@ -27,6 +27,8 @@ class PluginContainer
 
 				$response = $plugin->run($chatmsg);
 
+				if ($response === false) continue;
+
 				if ($response and is_string($response)) {
 					$chatmsg->reply($response);
 				}
