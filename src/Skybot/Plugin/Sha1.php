@@ -13,6 +13,6 @@ class Sha1 extends BasePlugin implements PluginInterface
 
 	public function handle($chatmsg, $result)
 	{
-		$chatmsg->reply(sha1($result[2]));
+		return sha1($result[2]);
 	}
 }

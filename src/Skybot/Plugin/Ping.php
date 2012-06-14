@@ -13,6 +13,6 @@ class Ping extends BasePlugin implements PluginInterface
 
 	public function handle($chatmsg, $result)
 	{
-		$chatmsg->reply("Yo! Pong to you " . $chatmsg->getSkypeName() . "!");			
+		return "Yo! Pong to you " . $chatmsg->getSkypeName() . "!";			
 	}
 }

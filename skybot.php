@@ -48,28 +48,34 @@ $skype->on('skype.message', function(Message $chatmsg) use ($plugincontainer) {
 });
 
 $finder = new Finder();
-$finder->files()->in($config->getPluginDir())->name("*.php");
 
-foreach ($finder as $file) {
-	$classname = "Skybot\\Plugin\\".basename($file->getFileName(), ".php");
+$plugindirs = array($config->getPluginDir(), __DIR__."/src/Skybot/Plugin/");
 
-	$implements = class_implements($classname);
+foreach ($plugindirs as $dir) {
 
-	if (!$implements) continue;
+	$finder->files()->in($dir)->name("*.php");
 
-	if (in_array("Skybot\\PluginInterface", $implements)) {
-		$plugin = new $classname($dic);
+	foreach ($finder as $file) {
+		$classname = "Skybot\\Plugin\\".basename($file->getFileName(), ".php");
 
-		if ($plugin instanceof \Skybot\BasePlugin) {
-			$plugincontainer->add($plugin);
-			$dic['log']->addDebug("Added plugin $classname : ".$plugin->getDescription());
+		$implements = class_implements($classname);
+
+		if (!$implements) continue;
+
+		if (in_array("Skybot\\PluginInterface", $implements)) {
+			$plugin = new $classname($dic);
+
+			if ($plugin instanceof \Skybot\BasePlugin) {
+				if ($plugincontainer->add($plugin)) {
+					$dic['log']->addDebug("Added plugin $classname : ".$plugin->getDescription());
+				}
+			} else {
+				die("$classname is not instance of Skybot\\BasePlugin\n");
+			}
 		} else {
-			die("$classname is not instance of Skybot\\BasePlugin\n");
+			die("$classname is does not implement Skybot\\PluginInterface\n");
 		}
-	} else {
-		die("$classname is does not implement Skybot\\PluginInterface\n");
 	}
 }
-
 $skybot = new \Skybot($dic);
 $skybot->run();
