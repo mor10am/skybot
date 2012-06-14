@@ -9,6 +9,7 @@
 			"email": "mor10am@gmail.com"
 		}
 	],
+	"bin": ["skybot.php", "async.php"],
 	"require": {
 		"php": ">=5.3.0",
 		"evenement/evenement": "dev-master",
