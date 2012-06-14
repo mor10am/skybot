@@ -21,18 +21,11 @@ class PluginContainer
 	{
 		foreach ($this->getPlugins() as $plugin) {
 			try {
-				if (!$plugin->getRegexp()) continue;
-				if (!$matches = preg_match($plugin->getRegexp(), $chatmsg->getBody(), $result)) continue;
-
-				if (isset($result[1]) and trim($result[1]) == 'me') {
-					$chatmsg->setDM();
-				}
-
 				if ($this->dic['log']) {
 					$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
 				}
 
-				$response = $plugin->run($chatmsg, $result);
+				$response = $plugin->run($chatmsg);
 
 				if ($response and is_string($response)) {
 					$chatmsg->reply($response);

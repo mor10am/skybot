@@ -18,8 +18,15 @@ abstract class BasePlugin
 		$this->dic = $dic;
 	}
 
-	public function run(Message $chatmsg, $result)
+	public function run(Message $chatmsg)
 	{		
+		if (!$this->getRegexp()) continue;
+		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) continue;
+
+		if (isset($result[1]) and trim($result[1]) == 'me') {
+			$chatmsg->setDM();
+		}
+
 		if ($this->async) {
 			$asyncmsg = $chatmsg->createAsyncMessage();
 			$asyncmsg->result = $result;
