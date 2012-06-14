@@ -12,8 +12,14 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Skybot\Skype\Message;
 
+if (isset($_SERVER['PWD'])) {
+    $basedir = $_SERVER['PWD'];
+} else {
+    $basedir = __DIR__;
+}
+
 try {
-	$config = new \Skybot\Config(__DIR__."/config.yml");	
+	$config = new \Skybot\Config($basedir."/config.yml");	
 
 } catch (Exception $e) {
 	die($e->getMessage()."\n");
