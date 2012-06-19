@@ -2,6 +2,7 @@ skybot:
   skypename: "<skybot skypename>"
   plugin_dir: "<full path to plugins>"
   log_dir: "<full path of log dir>"
-  async_dir: "<full path of async command>"
+  base_dir: "<base path of the project>"
+  async_cmd: "<relative path and filename of async command>"
   server_port: <port>
   
