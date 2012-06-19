@@ -39,7 +39,7 @@ abstract class BasePlugin
 			$dir = false;
 
 			if (isset($this->dic['config'])) {
-				$dir = $this->dic['config']->bin_dir;
+				$dir = $this->dic['config']->async_dir;
 				if ($dir) {
 					$dir = $dir."/";
 				}
