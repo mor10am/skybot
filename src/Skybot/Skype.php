@@ -83,14 +83,15 @@ class Skype extends EventEmitter
     {
         $result = $this->invoke("GET CHAT {$chatid} RECENTCHATMESSAGES"); 
         
-        $messages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
+        $recentmessages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
         
-        if (!count($messages)) return true;
+        if (!count($recentmessages)) return true;
 
-        foreach ($messages as $msgid) {
-            if (isset($this->messages[$msgid])) continue;
+        $newmessages = array_diff($recentmessages, $this->messages);
 
-            $this->messages[$msgid] = true;
+        foreach ($newmessages as $msgid) {
+
+            $this->messages[] = $msgid;
 
             $chatmsg = new Message($msgid, $chatid, $this->dic);
             
