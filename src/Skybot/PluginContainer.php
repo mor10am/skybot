@@ -19,12 +19,12 @@ class PluginContainer
 
 	public function parseMessage(Message $chatmsg)
 	{
+		if ($this->dic['log']) {
+			$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
+		}
+
 		foreach ($this->getPlugins() as $plugin) {
 			try {
-				if ($this->dic['log']) {
-					$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
-				}
-
 				$response = $plugin->run($chatmsg);
 
 				if ($response === false) continue;
