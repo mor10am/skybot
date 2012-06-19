@@ -25,6 +25,8 @@ try {
 	die($e->getMessage()."\n");
 }
 
+$config->bin_dir = $basedir;
+
 $loader->add('Skybot\\Plugin', $config->getPluginDir());
 
 $log = new Logger('skybot');

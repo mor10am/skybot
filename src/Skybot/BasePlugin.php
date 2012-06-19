@@ -39,11 +39,10 @@ abstract class BasePlugin
 			$dir = false;
 
 			if (isset($this->dic['config'])) {
-				$dir = $this->dic['config']->async_dir;
-			}
-
-			if (!$dir) {
-				$dir = __DIR__ . "/../../";
+				$dir = $this->dic['config']->bin_dir;
+				if ($dir) {
+					$dir = $dir."/";
+				}
 			}
 
 			$cmd = "/usr/bin/daemon ".$dir."async.php $payload";
