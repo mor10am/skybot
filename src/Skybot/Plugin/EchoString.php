@@ -8,7 +8,7 @@ use Skybot\Skype\Reply;
 
 class EchoString extends BasePlugin implements PluginInterface
 {
-	protected $regexp = "/^echo( me)? (.*)$/";
+	protected $regexp = "/^echo( me)? (.*)$/ms";
 	protected $description = "Echo back the same text.";
 
 	public function handle($chatmsg, $result)

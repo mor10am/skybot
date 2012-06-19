@@ -14,7 +14,6 @@ class Skype extends EventEmitter
     public $proxy;
 
     public $timestamp;
-    public $checkpoint;
 
     public $botname;  
     public $messages = array();
@@ -30,6 +29,7 @@ class Skype extends EventEmitter
     public function __construct($dic)
     {
         $this->dic = $dic;
+
         $this->dbus = new \DBus(\Dbus::BUS_SESSION, true);
         $this->proxy = $this->dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
 
@@ -38,7 +38,6 @@ class Skype extends EventEmitter
 
     	$this->botname = $dic['config']->getSkypeName();
         $this->timestamp = time();
-        $this->checkpoint = time();
 
         $port = $dic['config']->getServerPort();
 
@@ -78,8 +77,6 @@ class Skype extends EventEmitter
         foreach ($chats as $chatid) {
             $this->loadAndEmitChatMessages($chatid);
         }
-
-        $this->checkpoint = time()-2;
     }    
 
     private function loadAndEmitChatMessages($chatid)
@@ -97,7 +94,7 @@ class Skype extends EventEmitter
 
             $chatmsg = new Message($msgid, $chatid, $this->dic);
             
-            if ($chatmsg->getSkypeName() == $this->dic['config']->getSkypeName() or $chatmsg->getTimestamp() < $this->checkpoint or $chatmsg->isEmpty()) {
+            if ($chatmsg->getSkypeName() == $this->dic['config']->getSkypeName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
                 continue;
             }            
 
@@ -151,7 +148,7 @@ class Skype extends EventEmitter
                 $this->dic['log']->addWarning("Message from $address : $txt");
             }
 
-            if (!preg_match("/\[(.{1,})\]\[(.{1,})\] (.*)/", $txt, $matches)) continue;        
+            if (!preg_match("/\[(.{1,})\]\[(.{1,})\] (.*)$/ms", $txt, $matches)) continue;        
 
             $chatname = strtolower(trim($matches[1]));
             $skypename = trim($matches[2]);
@@ -177,7 +174,8 @@ class Skype extends EventEmitter
 
                     $this->chatnames[$friendlyname] = $cid;
 
-                    if ($friendlyname == $chatname) {
+                    if (strpos($friendlyname, $chatname) !== false) {
+                        $this->chatnames[$chatname] = $cid;
                         $chatid = $cid;
                         break;
                     }                    
