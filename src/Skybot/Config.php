@@ -70,6 +70,11 @@ class Config
         }
     }
 
+    public function __set($field, $value)
+    {
+        $this->conf[$field] = $value;
+    }
+
     public function getSkypeName()
     {
     	return $this->skypename;
