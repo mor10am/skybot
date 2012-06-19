@@ -36,7 +36,17 @@ abstract class BasePlugin
 
 			$this->dic['log']->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->skypename}");
 
-			$cmd = "/usr/bin/daemon ".__DIR__ . "/../../async.php $payload";
+			$dir = false;
+
+			if (isset($this->dic['config'])) {
+				$dir = $this->dic['config']->async_dir;
+			}
+
+			if (!$dir) {
+				$dir = __DIR__ . "/../../";
+			}
+
+			$cmd = "/usr/bin/daemon ".$dir."async.php $payload";
 
 			$this->dic['log']->addDebug($cmd);
 			

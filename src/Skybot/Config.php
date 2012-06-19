@@ -65,7 +65,9 @@ class Config
 
     public function __get($field)
     {
-        return $this->conf[$field];
+        if (isset($this->conf[$field])) {
+            return $this->conf[$field];
+        }
     }
 
     public function getSkypeName()
