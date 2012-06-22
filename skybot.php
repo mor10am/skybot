@@ -30,7 +30,7 @@ $config->bin_dir = $basedir;
 $loader->add('Skybot\\Plugin', $config->getPluginDir());
 
 $log = new Logger('skybot');
-$log->pushHandler(new StreamHandler($config->getLogDir()."/".date('Ymd').".log", Logger::DEBUG));
+$log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", Logger::DEBUG));
 
 $dic = new \Pimple();
 $dic['config'] = $config;
@@ -58,7 +58,9 @@ foreach ($plugindirs as $dir) {
 	$finder->files()->in($dir)->name("*.php");
 
 	foreach ($finder as $file) {
-		$classname = "Skybot\\Plugin\\".basename($file->getFileName(), ".php");
+		require_once $file;
+
+		$classname = "\\Skybot\\Plugin\\".basename($file->getFileName(), ".php");
 
 		$implements = class_implements($classname);
 
@@ -68,7 +70,7 @@ foreach ($plugindirs as $dir) {
 			$plugin = new $classname($dic);
 
 			if ($plugin instanceof \Skybot\BasePlugin) {
-				if ($plugincontainer->add($plugin)) {
+				if ($plugincontainer->addPlugin($plugin)) {
 					$dic['log']->addDebug("Added plugin $classname : ".$plugin->getDescription());
 				}
 			} else {
@@ -79,5 +81,43 @@ foreach ($plugindirs as $dir) {
 		}
 	}
 }
+
+$finder = new Finder();
+
+$filterdirs = array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/");
+
+foreach ($filterdirs as $dir) {
+
+	try {
+		$finder->files()->in($dir)->name("*.php");
+
+		foreach ($finder as $file) {
+			require_once $file;
+
+			$classname = "\\Skybot\\Filter\\".basename($file->getFileName(), ".php");
+
+			$implements = class_implements($classname);
+
+			if (!$implements) continue;
+
+			if (in_array("Skybot\\FilterInterface", $implements)) {
+				$filter = new $classname($dic);
+
+				if ($filter instanceof \Skybot\BaseFilter) {
+					if ($plugincontainer->addFilter($filter)) {
+						$dic['log']->addDebug("Added filter $classname : ".$filter->getDescription());
+					}
+				} else {
+					die("$classname is not instance of Skybot\\BaseFilter\n");
+				}
+			} else {
+				die("$classname is does not implement Skybot\\FilterInterface\n");
+			}
+		}
+	} catch (InvalidArgumentException $e) {
+
+	}
+}
+
 $skybot = new \Skybot($dic);
 $skybot->run();
