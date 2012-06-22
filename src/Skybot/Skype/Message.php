@@ -93,7 +93,7 @@ class Message
     
     public function getReplyBody()
     {
-        return $this->reply;
+        return $this->replybody;
     }
 
     public function mark()
