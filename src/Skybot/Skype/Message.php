@@ -15,6 +15,7 @@ class Message
     private $marked = false;
     private $dm = false;
     private $dic;
+    private $replybody;
 
     public function __construct($msgid = null, $chatid = null, \Pimple $dic = null)
     {
@@ -90,6 +91,11 @@ class Message
         return $this->body;
     }
     
+    public function getReplyBody()
+    {
+        return $this->reply;
+    }
+
     public function mark()
     {
         $this->marked = true;
@@ -106,6 +112,8 @@ class Message
 
     public function reply($txt)
     {
+        $this->replybody = $txt;
+
         if (isset($this->dic['skype'])) {
             if ($txt instanceof Reply) {
                 $this->dic['skype']->reply($txt); 
@@ -113,7 +121,7 @@ class Message
                 $this->dic['skype']->reply(new Reply($this, $txt, $this->dm)); 
             }
         } else {
-            echo $reply->getBody()."\n";
+            echo $txt."\n";
         }
 
         return true;

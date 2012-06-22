@@ -8,6 +8,7 @@ class Config
 {
 	public $skypename;
 	public $plugin_dir;
+    public $filter_dir;
     public $log_dir;
     public $server_port;
 
@@ -46,6 +47,15 @@ class Config
         	throw new \Exception("The config skybot.plugin_dir is missing!");
         }
 
+        if (isset($config['skybot']['filter_dir'])) {
+            $this->filter_dir = $config['skybot']['filter_dir'];
+            if (!$this->filter_dir) {
+                throw new \Exception("Filter directory is blank.");
+            }
+        } else {
+            throw new \Exception("The config skybot.plugin_dir is missing!");
+        }        
+
         if (isset($config['skybot']['log_dir'])) {
             $this->log_dir = $config['skybot']['log_dir'];
             if (!$this->log_dir) {
@@ -83,6 +93,11 @@ class Config
     public function getPluginDir()
     {
     	return $this->plugin_dir;
+    }
+
+    public function getFilterDir()
+    {
+        return $this->filter_dir;
     }
 
     public function getLogDir()

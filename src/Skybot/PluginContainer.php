@@ -10,6 +10,7 @@ use Skybot\Plugin;
 class PluginContainer
 {
 	private $plugins = array();
+	private $filters = array();
 	private $dic;	
 
 	public function __construct(\Pimple $dic)
@@ -19,8 +20,12 @@ class PluginContainer
 
 	public function parseMessage(Message $chatmsg)
 	{
-		if ($this->dic['log']) {
-			$this->dic['log']->addInfo($chatmsg->getSkypeName()." to Skybot : ".$chatmsg->getBody());
+		foreach ($this->getFilters() as $filter) {
+			if ($filter->beforePlugins()) {
+				$ret = $filter->handle($chatmsg);
+				if (!$ret instanceof Message) break;
+				$chatmsg = $ret;
+			}
 		}
 
 		foreach ($this->getPlugins() as $plugin) {
@@ -39,9 +44,17 @@ class PluginContainer
 				$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $dm));
 			}
 		}		
+
+		foreach ($this->getFilters() as $filter) {
+			if ($filter->afterPlugins()) {
+				$ret = $filter->handle($chatmsg);
+				if (!$ret instanceof Message) break;
+				$chatmsg = $ret;
+			}
+		}
 	}
 
-	public function add(PluginInterface $plugin)
+	public function addPlugin(PluginInterface $plugin)
 	{
 		$id = md5(get_class($plugin).$plugin->getRegExp());
 
@@ -51,8 +64,25 @@ class PluginContainer
 		}
 	}
 
+	public function addFilter(FilterInterface $filter)
+	{
+		$id = $filter->getPri().'_'.get_class($filter);
+
+		if (isset($this->filters[$id])) return true;
+
+		$this->filters[$id] = $filter;
+
+		ksort($this->filters);
+	}
+
+
 	public function getPlugins()
 	{
 		return $this->plugins;
 	}
+
+	public function getFilters()
+	{
+		return $this->filters;
+	}	
 }
