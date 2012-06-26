@@ -162,7 +162,7 @@ class Skype extends EventEmitter
 
             $chatname = strtolower(trim($matches[1]));
             $skypename = trim($matches[2]);
-            $body = $skypename.": ".$matches[3];
+            $body = $matches[3];
 
             if (substr($chatname, 0, 1) == '#') {
                 $this->chatnames[$chatname] = $chatname;
