@@ -16,7 +16,6 @@ if (!extension_loaded('dbus')) {
 
 $loader = require_once 'vendor/autoload.php';
 
-use Symfony\Component\Finder\Finder;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Skybot\Skype\Message;
@@ -58,75 +57,13 @@ $skype->on('skype.message', function(Message $chatmsg) use ($plugincontainer) {
 	}	
 });
 
-$finder = new Finder();
+try {
+	$plugincontainer->loadPlugins(array($config->getPluginDir(), __DIR__."/src/Skybot/Plugin/"));
+	$plugincontainer->loadFilters(array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/"));
 
-$plugindirs = array($config->getPluginDir(), __DIR__."/src/Skybot/Plugin/");
-
-foreach ($plugindirs as $dir) {
-
-	$finder->files()->in($dir)->name("*.php");
-
-	foreach ($finder as $file) {
-		require_once $file;
-
-		$classname = "\\Skybot\\Plugin\\".basename($file->getFileName(), ".php");
-
-		$implements = class_implements($classname);
-
-		if (!$implements) continue;
-
-		if (in_array("Skybot\\PluginInterface", $implements)) {
-			$plugin = new $classname($dic);
-
-			if ($plugin instanceof \Skybot\BasePlugin) {
-				if ($plugincontainer->addPlugin($plugin)) {
-					$dic['log']->addDebug("Added plugin $classname : ".$plugin->getDescription());
-				}
-			} else {
-				die("$classname is not instance of Skybot\\BasePlugin\n");
-			}
-		} else {
-			die("$classname is does not implement Skybot\\PluginInterface\n");
-		}
-	}
+	$skybot = new \Skybot($dic);
+	$skybot->run();
+} catch (Exception $e) {
+	$log->addError($e->getMessage());
+	die($e->getMessage());
 }
-
-$finder = new Finder();
-
-$filterdirs = array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/");
-
-foreach ($filterdirs as $dir) {
-
-	try {
-		$finder->files()->in($dir)->name("*.php");
-
-		foreach ($finder as $file) {
-			require_once $file;
-
-			$classname = "\\Skybot\\Filter\\".basename($file->getFileName(), ".php");
-
-			$implements = class_implements($classname);
-
-			if (!$implements) continue;
-
-			if (in_array("Skybot\\FilterInterface", $implements)) {
-				$filter = new $classname($dic);
-
-				if ($filter instanceof \Skybot\BaseFilter) {
-					if ($plugincontainer->addFilter($filter)) {
-						$dic['log']->addDebug("Added filter $classname : ".$filter->getDescription());
-					}
-				} else {
-					die("$classname is not instance of Skybot\\BaseFilter\n");
-				}
-			} else {
-				die("$classname is does not implement Skybot\\FilterInterface\n");
-			}
-		}
-	} catch (InvalidArgumentException $e) {
-
-	}
-}
-
-$skybot = new \Skybot($dic);
-$skybot->run();
