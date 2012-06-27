@@ -35,7 +35,9 @@ try {
 
 $config->bin_dir = $basedir;
 
-$loader->add('Skybot\\Plugin', $config->getPluginDir());
+if ($config->getPluginDir()) {
+	$loader->add('Skybot\\Plugin', $config->getPluginDir());
+}
 
 $log = new Logger('skybot');
 $log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", Logger::DEBUG));

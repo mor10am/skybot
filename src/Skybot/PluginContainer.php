@@ -105,6 +105,7 @@ class PluginContainer
 		}
 
 		foreach ($plugindirs as $dir) {
+			if (!$dir) continue;
 
 			$finder->files()->in($dir)->name("*.php");
 
@@ -143,7 +144,8 @@ class PluginContainer
 		}
 
 		foreach ($filterdirs as $dir) {
-
+			if (!$dir) continue;
+			
 			try {
 				$finder->files()->in($dir)->name("*.php");
 

@@ -49,20 +49,10 @@ class Config
 
         if (isset($config['skybot']['plugin_dir'])) {
         	$this->plugin_dir = $config['skybot']['plugin_dir'];
-        	if (!$this->plugin_dir) {
-        		throw new \Exception("Plugin directory is blank.");
-        	}
-        } else {
-        	throw new \Exception("The config skybot.plugin_dir is missing!");
-        }
+        } 
 
         if (isset($config['skybot']['filter_dir'])) {
             $this->filter_dir = $config['skybot']['filter_dir'];
-            if (!$this->filter_dir) {
-                throw new \Exception("Filter directory is blank.");
-            }
-        } else {
-            throw new \Exception("The config skybot.plugin_dir is missing!");
         }        
 
         if (isset($config['skybot']['log_dir'])) {
