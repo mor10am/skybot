@@ -16,7 +16,7 @@
 		"symfony/finder": "2.0.*",
 		"symfony/yaml": "2.0.*",
 		"pimple/pimple": "dev-master",
-		"monolog/monolog": "1.1.*"
+		"monolog/monolog": "dev-master"
 	},
     "autoload": {
         "psr-0": {

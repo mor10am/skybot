@@ -1,5 +1,5 @@
 {
-    "hash": "1488e56de2c42a80b71eee2c5a29dddd",
+    "hash": "1e4dc81b58295ebff302ccedd3f7d190",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -8,13 +8,8 @@
         },
         {
             "package": "monolog/monolog",
-            "version": "1.1.0"
-        },
-        {
-            "package": "pimple/pimple",
             "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
+            "source-reference": "6cbdc0410c08fb03d7eee6b69126661fcbb89c41"
         },
         {
             "package": "pimple/pimple",
@@ -39,6 +34,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "evenement/evenement": 20,
-        "pimple/pimple": 20
+        "pimple/pimple": 20,
+        "monolog/monolog": 20
     }
 }
