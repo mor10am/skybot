@@ -114,9 +114,18 @@ class Skype extends EventDispatcher
         }
     }
 
-    private function _getRecentChats()
+    private function _getMissedChats()
     {
         $result = $this->invoke("SEARCH MISSEDCHATS");
+
+        $chats = explode(", ", substr($result, 6));
+
+        return $chats;
+    }
+
+    private function _getRecentChats()
+    {
+        $result = $this->invoke("SEARCH RECENTCHATS");
 
         $chats = explode(", ", substr($result, 6));
 
