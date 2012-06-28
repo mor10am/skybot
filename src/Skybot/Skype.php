@@ -158,7 +158,7 @@ class Skype extends EventEmitter
                 $this->dic['log']->addWarning("Message from $address : $txt");
             }
 
-            if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/Ums", $txt, $matches)) continue;        
+            if (!$matches = self::parseTcpMessage($txt)) continue;
 
             $chatname = strtolower(trim($matches[1]));
             $skypename = trim($matches[2]);
@@ -200,6 +200,13 @@ class Skype extends EventEmitter
 
             $this->emit('skype.message', array($msg));
         }
+    }
+
+    public static function parseTcpMessage($txt)
+    {
+        if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;        
+
+        return $matches;
     }
 
     public function reply(Reply $reply)
