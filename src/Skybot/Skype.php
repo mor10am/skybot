@@ -254,7 +254,7 @@ class Skype extends EventDispatcher
 
             $status = $t[3];
 
-            if ($status == 'RINGING' or $status == 'INPROGRESS' or $status == 'ONHOLD') {
+            if ($status == 'RINGING') {
                 $this->invoke("ALTER CALL $callid END HANGUP");                
             }
         }        
