@@ -18,12 +18,12 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Skype extends EventDispatcher
 {
-    public $dbus;  
+    public $dbus;
     public $proxy;
 
     public $timestamp;
 
-    public $botname;  
+    public $botname;
     public $messages = array();
     public $calls = array();
     public $personalchats = array();
@@ -62,23 +62,23 @@ class Skype extends EventDispatcher
     public function getProxy()
     {
         return $this->proxy;
-    }       
-       
+    }
+
     public function invoke($command)
     {
         //echo $command."\n";
-    	$response = $this->proxy->Invoke($command);    	
+    	$response = $this->proxy->Invoke($command);
         //echo $response."\n";
         return $response;
     }
 
     public function handleChatMessages()
-    {   
+    {
         $this->_refuseCalls();
 
         $this->_getMessagesFromPort();
 
-        $chats = $this->_getRecentChats();
+        $chats = $this->_getMissedChats();
 
         if (!count($chats)) return false;
 
@@ -86,14 +86,14 @@ class Skype extends EventDispatcher
             if (!$chatid) continue;
             $this->loadAndEmitChatMessages($chatid);
         }
-    }    
+    }
 
     private function loadAndEmitChatMessages($chatid)
     {
-        $result = $this->invoke("GET CHAT {$chatid} RECENTCHATMESSAGES"); 
-        
+        $result = $this->invoke("GET CHAT {$chatid} RECENTCHATMESSAGES");
+
         $recentmessages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
-        
+
         if (!count($recentmessages)) return true;
 
         $newmessages = array_diff($recentmessages, $this->messages);
@@ -103,30 +103,30 @@ class Skype extends EventDispatcher
             $this->messages[] = $msgid;
 
             $chatmsg = new Message($msgid, $chatid, $this->dic);
-            
+
             if ($chatmsg->getSkypeName() == $this->dic['config']->getSkypeName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
                 continue;
-            }            
+            }
 
             $this->dispatch('skype.message', $chatmsg);
 
-            $chatmsg->mark();                    
-        }         
-    }   
+            $chatmsg->mark();
+        }
+    }
 
     private function _getRecentChats()
     {
         $result = $this->invoke("SEARCH MISSEDCHATS");
 
         $chats = explode(", ", substr($result, 6));
-        
-        return $chats;    
+
+        return $chats;
     }
 
     public function waitLoop($millisec)
     {
         $this->dbus->waitLoop($millisec);
-    } 
+    }
 
     private function _getMessagesFromPort()
     {
@@ -147,7 +147,7 @@ class Skype extends EventDispatcher
         if (count($e)) {
             $this->clients = array_diff($this->clients, $e);
         }
-    
+
         foreach ($r as $client) {
             $bytes = socket_recv($client, $txt, 1024, MSG_DONTWAIT);
             if (!$bytes) continue;
@@ -188,11 +188,11 @@ class Skype extends EventDispatcher
                         $this->chatnames[$chatname] = $cid;
                         $chatid = $cid;
                         break;
-                    }                    
+                    }
                 }
 
                 if (!$chatid) continue;
-            }    
+            }
 
             $msg = new Message(null, $chatid, $this->dic);
             $msg->setBody($body);
@@ -204,7 +204,7 @@ class Skype extends EventDispatcher
 
     public static function parseTcpMessage($txt)
     {
-        if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;        
+        if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;
 
         return $matches;
     }
@@ -255,8 +255,8 @@ class Skype extends EventDispatcher
             $status = $t[3];
 
             if ($status == 'RINGING') {
-                $this->invoke("ALTER CALL $callid END HANGUP");                
+                $this->invoke("ALTER CALL $callid END HANGUP");
             }
-        }        
+        }
     }
 }
