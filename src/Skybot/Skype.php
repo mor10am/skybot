@@ -14,10 +14,9 @@ namespace Skybot;
 use Skybot\Skype\Message;
 use Skybot\Skype\Reply;
 use Skybot\Skype\DirectMessage;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
-use Evenement\EventEmitter;
-
-class Skype extends EventEmitter
+class Skype extends EventDispatcher
 {
     public $dbus;  
     public $proxy;
@@ -84,6 +83,7 @@ class Skype extends EventEmitter
         if (!count($chats)) return false;
 
         foreach ($chats as $chatid) {
+            if (!$chatid) continue;
             $this->loadAndEmitChatMessages($chatid);
         }
     }    
@@ -108,7 +108,7 @@ class Skype extends EventEmitter
                 continue;
             }            
 
-            $this->emit('skype.message', array($chatmsg));
+            $this->dispatch('skype.message', $chatmsg);
 
             $chatmsg->mark();                    
         }         

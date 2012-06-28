@@ -62,6 +62,8 @@ class PluginContainer
 				$chatmsg = $ret;
 			}
 		}
+
+		return $chatmsg;
 	}
 
 	public function addPlugin(PluginInterface $plugin)

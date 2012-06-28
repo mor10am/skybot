@@ -53,7 +53,7 @@ $plugincontainer = new \Skybot\PluginContainer($dic);
 $dic['skype'] = $skype;
 $dic['plugincontainer'] = $plugincontainer;
 
-$skype->on('skype.message', function(Message $chatmsg) use ($plugincontainer) {
+$skype->addListener('skype.message', function(Message $chatmsg) use ($plugincontainer) {
 	if (!$chatmsg->isMarked()) {
 		$plugincontainer->parseMessage($chatmsg);
 	}	

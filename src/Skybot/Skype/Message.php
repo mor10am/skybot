@@ -13,8 +13,9 @@ namespace Skybot\Skype;
 
 use Skybot\Skype\Reply;
 use Skybot\Skype\AsyncMessage;
+use Symfony\Component\EventDispatcher\Event;
 
-class Message
+class Message extends Event
 {
     private $messageid;
     private $body;
