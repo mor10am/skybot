@@ -132,6 +132,16 @@ class Skype extends EventDispatcher
         return $chats;
     }
 
+    public function isFriend($skypename)
+    {
+        $result = $this->invoke("SEARCH FRIENDS");
+        $friends = explode(", ", substr($result, 6));
+
+        if (!count($friends)) return false;
+
+        return (in_array($skypename, $friends));
+    }
+
     public function waitLoop($millisec)
     {
         $this->dbus->waitLoop($millisec);
@@ -206,6 +216,7 @@ class Skype extends EventDispatcher
             $msg = new Message(null, $chatid, $this->dic);
             $msg->setBody($body);
             $msg->setSkypeName($skypename);
+            $msg->setInternal();
 
             $this->dispatch('skype.message', $chatmsg);
         }

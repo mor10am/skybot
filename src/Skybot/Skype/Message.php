@@ -26,6 +26,7 @@ class Message extends Event
     private $dm = false;
     private $dic;
     private $replybody;
+    private $internal = false;
 
     public function __construct($msgid = null, $chatid = null, \Pimple $dic = null)
     {
@@ -42,13 +43,23 @@ class Message extends Event
             $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid TIMESTAMP");
 
             $template = "CHATMESSAGE $msgid TIMESTAMP ";
-            $this->timestamp = trim(str_replace($template, "", $result));        
+            $this->timestamp = trim(str_replace($template, "", $result));
 
             $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid FROM_HANDLE");
 
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
-            $this->setSkypeName(trim(str_replace($template, "", $result)));  
-        }      
+            $this->setSkypeName(trim(str_replace($template, "", $result)));
+        }
+    }
+
+    public function setInteral()
+    {
+        $this->internal = true;
+    }
+
+    public function isInternal()
+    {
+        return $this->internal;
     }
 
     public function setDM()
@@ -73,7 +84,7 @@ class Message extends Event
 
     public function setBody($msg)
     {
-        $this->body = $msg;        
+        $this->body = $msg;
     }
 
     public function setSkypeName($handle)
@@ -83,7 +94,7 @@ class Message extends Event
 
     public function getSkypeName()
     {
-        return $this->skypename;        
+        return $this->skypename;
     }
 
     public function getTimestamp()
@@ -95,12 +106,12 @@ class Message extends Event
     {
         return (strlen($this->body) == 0);
     }
-    
+
     public function getBody()
     {
         return $this->body;
     }
-    
+
     public function getReplyBody()
     {
         return $this->replybody;
@@ -109,9 +120,9 @@ class Message extends Event
     public function mark()
     {
         $this->marked = true;
-        
+
         if ($this->messageid) {
-            $this->dic['skype']->invoke("SET CHATMESSAGE {$this->messageid} SEEN");        
+            $this->dic['skype']->invoke("SET CHATMESSAGE {$this->messageid} SEEN");
         }
     }
 
@@ -126,9 +137,9 @@ class Message extends Event
 
         if (isset($this->dic['skype'])) {
             if ($txt instanceof Reply) {
-                $this->dic['skype']->reply($txt); 
+                $this->dic['skype']->reply($txt);
             } else {
-                $this->dic['skype']->reply(new Reply($this, $txt, $this->dm)); 
+                $this->dic['skype']->reply(new Reply($this, $txt, $this->dm));
             }
         } else {
             echo $txt."\n";

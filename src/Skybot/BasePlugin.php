@@ -28,9 +28,20 @@ abstract class BasePlugin
 	}
 
 	public function run(Message $chatmsg)
-	{		
+	{
 		if (!$this->getRegexp()) return false;
 		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
+
+		if (!$chatmsg->isInternal()) {
+			if (isset($this->dic['skype'])) {
+				if (!$this->dic['skype']->isFriend($chatmsg->getSkypeName())) {
+					if ($this->dic['log']) {
+						$this->dic['log']->addWarning($chatmsg->getSkypeName()." is not a friend.");
+					}
+					return true;
+				}
+			}
+		}
 
 		if (isset($result[1]) and trim($result[1]) == 'me') {
 			$chatmsg->setDM();
@@ -60,7 +71,7 @@ abstract class BasePlugin
             $cmd = "/usr/bin/daemon --chdir=".$dir." ".$cmd." ".$payload;
 
 			$this->dic['log']->addDebug($cmd);
-			
+
 			exec($cmd, $retval);
 
 			return true;
@@ -68,7 +79,7 @@ abstract class BasePlugin
 		} else {
 			return $this->handle($chatmsg, $result);
 		}
-	}	
+	}
 
 	public function getRegExp()
 	{
