@@ -52,7 +52,7 @@ class Message extends Event
         }
     }
 
-    public function setInteral()
+    public function setInternal()
     {
         $this->internal = true;
     }
