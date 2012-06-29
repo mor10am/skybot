@@ -207,7 +207,7 @@ class Skype extends EventDispatcher
             $msg->setBody($body);
             $msg->setSkypeName($skypename);
 
-            $this->emit('skype.message', array($msg));
+            $this->dispatch('skype.message', $chatmsg);
         }
     }
 
