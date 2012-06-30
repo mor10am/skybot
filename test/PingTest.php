@@ -13,7 +13,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 
 		$response = $plugin->run($message);
 
-		$this->assertEquals($response, "Yo! Pong to you myskypename!");
+		$this->assertEquals($response, "Hi, myskypename. Pong!");
 		$this->assertFalse($message->isDM());
 	}
 
@@ -28,7 +28,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 
 		$response = $plugin->run($message);
 
-		$this->assertEquals($response, "Yo! Pong to you myskypename!");
+		$this->assertEquals($response, "Hi, myskypename. Pong!");
 		$this->assertTrue($message->isDM());
 	}
 

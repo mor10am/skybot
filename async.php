@@ -23,7 +23,9 @@ if (isset($_SERVER['PWD'])) {
 }
 
 try {
-	$config = new \Skybot\Config($basedir."/config.yml");	
+	$config = new \Skybot\Config($basedir."/config.yml");
+
+	$storage = new \Skybot\Storage($basedir."/skybot.db");
 
 } catch (Exception $e) {
 	die($e->getMessage()."\n");
@@ -37,6 +39,7 @@ $log->pushHandler(new StreamHandler($config->getLogDir()."/".date('Ymd').".log",
 $dic = new \Pimple();
 $dic['config'] = $config;
 $dic['log'] = $log;
+$dic['storage'] = $storage;
 
 $plugincontainer = new \Skybot\PluginContainer($dic);
 
