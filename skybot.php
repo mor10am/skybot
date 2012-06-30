@@ -56,7 +56,15 @@ $dic['plugincontainer'] = $plugincontainer;
 
 $skype->addListener('skype.message', function(Event $chatmsg) use ($plugincontainer) {
 	if (!$chatmsg->isMarked()) {
-		$plugincontainer->parseMessage($chatmsg);
+		try {
+			$plugincontainer->parseMessage($chatmsg);
+		} catch (Exception $e) {
+			$dic = $chatmsg->getDic();
+
+			if ($dic['log']) {
+				$dic['log']->addError($e->getMessage());
+			}
+		}
 	}
 });
 
