@@ -19,6 +19,7 @@ $loader = require_once 'vendor/autoload.php';
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Skybot\Skype\Message;
+use Symfony\Component\EventDispatcher\Event;
 
 if (isset($_SERVER['PWD'])) {
     $basedir = $_SERVER['PWD'];
@@ -27,7 +28,7 @@ if (isset($_SERVER['PWD'])) {
 }
 
 try {
-	$config = new \Skybot\Config($basedir."/config.yml");	
+	$config = new \Skybot\Config($basedir."/config.yml");
 
 } catch (Exception $e) {
 	die($e->getMessage()."\n");
@@ -53,10 +54,10 @@ $plugincontainer = new \Skybot\PluginContainer($dic);
 $dic['skype'] = $skype;
 $dic['plugincontainer'] = $plugincontainer;
 
-$skype->addListener('skype.message', function(Message $chatmsg) use ($plugincontainer) {
+$skype->addListener('skype.message', function(Event $chatmsg) use ($plugincontainer) {
 	if (!$chatmsg->isMarked()) {
 		$plugincontainer->parseMessage($chatmsg);
-	}	
+	}
 });
 
 try {
