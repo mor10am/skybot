@@ -24,7 +24,7 @@ class Log extends BaseFilter implements FilterInterface
 	public function handle(Message $chatmsg)
 	{
 		if ($dic = $chatmsg->getDic() and isset($dic['log'])) {
-			$dic['log']->addDebug($chatmsg->getSkypeName() . ": " . $chatmsg->getBody());
+			$dic['log']->addDebug($chatmsg->getDispName() . ": " . $chatmsg->getBody());
 		}
 
 		return $chatmsg;

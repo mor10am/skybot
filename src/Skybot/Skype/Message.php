@@ -21,6 +21,7 @@ class Message extends Event
     private $body;
     private $timestamp;
     private $skypename;
+    private $dispname;
     private $chatid;
     private $marked = false;
     private $dm = false;
@@ -49,6 +50,11 @@ class Message extends Event
 
             $template = "CHATMESSAGE $msgid FROM_HANDLE ";
             $this->setSkypeName(trim(str_replace($template, "", $result)));
+
+            $result = $dic['skype']->invoke("GET CHATMESSAGE $msgid FROM_DISPNAME");
+
+            $template = "CHATMESSAGE $msgid FROM_DISPNAME ";
+            $this->setDispName(trim(str_replace($template, "", $result)));
         }
     }
 
@@ -96,6 +102,18 @@ class Message extends Event
     {
         return $this->skypename;
     }
+
+    public function setDispName($name)
+    {
+        $this->dispname = $name;
+    }
+
+    public function getDispName()
+    {
+        if (!$this->dispname) return $this->getSkypeName();
+        return $this->dispname;
+    }
+
 
     public function getTimestamp()
     {

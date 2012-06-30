@@ -237,7 +237,7 @@ class Skype extends EventDispatcher
             $this->directMessage($reply->createDirectMessage());
         } else {
             $this->dic['skype']->invoke("CHATMESSAGE ".$reply->getChatMsg()->getChatId()." ".$reply->getBody());
-            $this->dic['log']->addInfo("Skybot reply to ".$reply->getSkypeName(). " : ".$reply->getBody());
+            $this->dic['log']->addInfo("Skybot reply to ".$reply->getChatMsg()->getDispName(). " : ".$reply->getBody());
         }
     }
 
