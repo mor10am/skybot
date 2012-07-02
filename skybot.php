@@ -75,8 +75,13 @@ try {
 	$plugincontainer->loadPlugins(array($config->getPluginDir(), __DIR__."/src/Skybot/Plugin/"));
 	$plugincontainer->loadFilters(array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/"));
 
-	$skybot = new \Skybot($dic);
-	$skybot->run();
+	do {
+	    $skype->handleChatMessages();
+
+	    $skype->waitLoop(500);
+
+	} while(true);
+
 } catch (Exception $e) {
 	$log->addError($e->getMessage());
 	die($e->getMessage());
