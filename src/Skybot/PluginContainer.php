@@ -77,6 +77,7 @@ class PluginContainer
 		$id = get_class($plugin);
 
 		if (!isset($this->plugins[$id])) {
+			$plugin->initialize();
 			$this->plugins[$id] = $plugin;
 
 			if ($this->skybot) {
