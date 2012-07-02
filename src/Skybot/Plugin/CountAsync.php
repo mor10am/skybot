@@ -23,11 +23,11 @@ class CountAsync extends BasePlugin implements PluginInterface
 	protected $async = true;
 
 	public function handle($chatmsg, $result)
-	{		
+	{
 	}
 
 	public function handleAsync(AsyncMessage $chatmsg)
-	{		
+	{
 		for ($i = 1;$i < 10;$i++) {
 			$chatmsg->reply("async count $i");
 			sleep(1);

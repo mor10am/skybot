@@ -21,7 +21,7 @@ class PluginContainer
 {
 	private $plugins = array();
 	private $filters = array();
-	private $dic;	
+	private $dic;
 
 	public function __construct(\Pimple $dic)
 	{
@@ -53,7 +53,7 @@ class PluginContainer
 			} catch (\Exception $e) {
 				$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $dm));
 			}
-		}		
+		}
 
 		foreach ($this->getFilters() as $filter) {
 			if ($filter->afterPlugins()) {
@@ -96,9 +96,9 @@ class PluginContainer
 	public function getFilters()
 	{
 		return $this->filters;
-	}	
+	}
 
-	public function loadPlugins($plugindirs) 
+	public function loadPlugins($plugindirs)
 	{
 		$finder = new Finder();
 
@@ -134,7 +134,7 @@ class PluginContainer
 					throw new \Exception("$classname is does not implement Skybot\\PluginInterface\n");
 				}
 			}
-		}		
+		}
 	}
 
 	public function loadFilters($filterdirs)
@@ -147,7 +147,7 @@ class PluginContainer
 
 		foreach ($filterdirs as $dir) {
 			if (!$dir) continue;
-			
+
 			try {
 				$finder->files()->in($dir)->name("*.php");
 
@@ -177,6 +177,6 @@ class PluginContainer
 			} catch (InvalidArgumentException $e) {
 
 			}
-		}		
+		}
 	}
 }

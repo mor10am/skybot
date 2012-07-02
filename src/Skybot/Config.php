@@ -35,7 +35,7 @@ class Config
     	}
 
         $config = Yaml::parse($filename);
- 
+
         $this->conf = $config['skybot'];
 
         if (isset($config['skybot']['skypename'])) {
@@ -49,11 +49,11 @@ class Config
 
         if (isset($config['skybot']['plugin_dir'])) {
         	$this->plugin_dir = $config['skybot']['plugin_dir'];
-        } 
+        }
 
         if (isset($config['skybot']['filter_dir'])) {
             $this->filter_dir = $config['skybot']['filter_dir'];
-        }        
+        }
 
         if (isset($config['skybot']['log_dir'])) {
             $this->log_dir = $config['skybot']['log_dir'];
@@ -102,7 +102,7 @@ class Config
     public function getLogDir()
     {
         return $this->log_dir;
-    }    
+    }
 
     public function getServerPort()
     {

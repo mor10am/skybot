@@ -26,7 +26,7 @@ class AsyncMessage
     public function reply($txt)
     {
         $port = $this->dic['config']->getServerPort();
-        
+
         if (!$port) return false;
 
         if (!$this->skypename) {
@@ -46,7 +46,7 @@ class AsyncMessage
 
         $socket = null;
 
-        return true;         
+        return true;
     }
 
     public function setDM()
@@ -57,7 +57,7 @@ class AsyncMessage
     public function isDM()
     {
         return $this->dm;
-    }    
+    }
 
     public function getSkypeName()
     {

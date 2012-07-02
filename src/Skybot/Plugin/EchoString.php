@@ -22,6 +22,6 @@ class EchoString extends BasePlugin implements PluginInterface
 
 	public function handle($chatmsg, $result)
 	{
-		return $result[2];			
+		return $result[2];
 	}
 }

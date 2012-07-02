@@ -23,7 +23,7 @@ class ListPlugins extends BasePlugin implements PluginInterface
 	public function handle($chatmsg, $result)
 	{
 		$dic = $chatmsg->getDic();
-		
+
 		if (!$dic) return false;
 		if (!isset($dic['plugincontainer'])) return false;
 
@@ -37,6 +37,6 @@ class ListPlugins extends BasePlugin implements PluginInterface
 			$i++;
 		}
 
-		return $txt;		
+		return $txt;
 	}
 }
