@@ -78,6 +78,11 @@ class Chat extends Event
         return $this->dm;
     }
 
+    public function setSkybot(\Skybot\Main $skybot)
+    {
+        $this->skybot = $skybot;
+    }
+
     public function getSkybot()
     {
         return $this->skybot;

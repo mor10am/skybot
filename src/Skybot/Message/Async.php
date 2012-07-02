@@ -25,6 +25,9 @@ class Async
 
     public function reply($txt)
     {
+        if (!$this->skybot) {
+            return $txt;
+
         $port = $this->skybot->getConfig()->getServerPort();
 
         if (!$port) return false;
@@ -36,7 +39,7 @@ class Async
         $txt = "[".$this->chatid."][".$this->skypename."] echo ".$txt;
 
         if (!$socket = fsockopen('127.0.0.1', $port, $errno, $errstr, 2)) {
-            $this->dic['log']->addError($errstr);
+            $this->skybot->getLog()->addError($errstr);
             return false;
         }
 

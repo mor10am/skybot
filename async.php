@@ -14,7 +14,7 @@ $loader = require_once 'vendor/autoload.php';
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Skybot\Skype\AsyncMessage;
+use Skybot\Message\Async;
 
 if (isset($_SERVER['PWD'])) {
     $basedir = $_SERVER['PWD'];
@@ -25,8 +25,6 @@ if (isset($_SERVER['PWD'])) {
 try {
 	$config = new \Skybot\Config($basedir."/config.yml");
 
-	$storage = new \Skybot\Storage($basedir."/skybot.db");
-
 } catch (Exception $e) {
 	die($e->getMessage()."\n");
 }
@@ -34,14 +32,15 @@ try {
 $loader->add('Skybot\\Plugin', $config->getPluginDir());
 
 $log = new Logger('async');
-$log->pushHandler(new StreamHandler($config->getLogDir()."/".date('Ymd').".log", Logger::DEBUG));
+$log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", Logger::DEBUG));
 
-$dic = new \Pimple();
-$dic['config'] = $config;
-$dic['log'] = $log;
-$dic['storage'] = $storage;
+$driver = new \Skybot\Driver\Dummy();
 
-$plugincontainer = new \Skybot\PluginContainer($dic);
+$skybot = new \Skybot\Main($driver, $config, $log);
+
+$plugincontainer = new \Skybot\PluginContainer($skybot);
+
+$skybot->setPluginContainer($plugincontainer);
 
 if (isset($argv[1])) {
 	$data = $argv[1];
@@ -50,14 +49,12 @@ if (isset($argv[1])) {
 }
 
 $chatmsg = unserialize(base64_decode($data));
-$chatmsg->dic = $dic;
+$chatmsg->setSkybot($skybot);
 
 $class = $chatmsg->plugin;
 
-$plugin = new $class($dic);
+$plugin = new $class($skybot);
 
 $plugincontainer->add($plugin);
-
-$dic['plugincontainer'] = $plugincontainer;
 
 $plugin->handleAsync($chatmsg);
