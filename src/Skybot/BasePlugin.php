@@ -33,7 +33,7 @@ abstract class BasePlugin
 
 	public function run(Chat $chatmsg)
 	{
-		if (!$this->getRegexp()) return false;
+		if (!$this->getRegexp()) throw new \Exception("Plugin has not regular expression.");
 		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
 
 		if (!$chatmsg->isInternal()) {
