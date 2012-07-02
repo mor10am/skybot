@@ -68,7 +68,7 @@ class PluginContainer
 
 	public function addPlugin(PluginInterface $plugin)
 	{
-		$id = md5(get_class($plugin).$plugin->getRegExp());
+		$id = get_class($plugin);
 
 		if (!isset($this->plugins[$id])) {
 			$this->plugins[$id] = $plugin;
