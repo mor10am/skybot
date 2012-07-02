@@ -13,7 +13,7 @@ namespace Skybot\Filter;
 
 use Skybot\BaseFilter;
 use Skybot\FilterInterface;
-use Skybot\Skype\Message;
+use Skybot\Message\Chat;
 
 class Log extends BaseFilter implements FilterInterface
 {
@@ -21,10 +21,10 @@ class Log extends BaseFilter implements FilterInterface
 	public $pos = self::BEFORE_PLUGINS;
 	public $description = "Log Skype message to log file";
 
-	public function handle(Message $chatmsg)
+	public function handle(Chat $chatmsg)
 	{
-		if ($dic = $chatmsg->getDic() and isset($dic['log'])) {
-			$dic['log']->addDebug($chatmsg->getDispName() . ": " . $chatmsg->getBody());
+		if ($chatmsg->getSkybot()) {
+			$chatmsg->getSkybot()->getLog()->addDebug($chatmsg->getDispName() . ": " . $chatmsg->getBody());
 		}
 
 		return $chatmsg;

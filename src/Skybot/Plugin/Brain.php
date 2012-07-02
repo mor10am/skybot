@@ -13,23 +13,24 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
-use Skybot\Skype\Reply;
+use Skybot\Message\Reply;
+use Skybot\Message\Chat;
+use Skybot\Storage;
 
 class Brain extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^\@(get|set) (.*)$/ms";
 	protected $description = "Key/value storage";
 
-	public function handle($chatmsg, $result)
+	private $storage;
+
+	public function initialize()
 	{
-		$dic = $chatmsg->getDic();
+		$this->storage = new Storage('brain.sqlite');
+	}
 
-		if (!isset($dic['storage'])) {
-			throw new \Exception("There is no storage defined.");
-		}
-
-		$storage = $dic['storage'];
-
+	public function handle(Chat $chatmsg, $result)
+	{
 		if ($result[1] == 'set') {
 			$tmp = explode(" ", $result[2]);
 
@@ -38,7 +39,7 @@ class Brain extends BasePlugin implements PluginInterface
 			$value = implode(" ", $tmp);
 
 			if ($field and $value) {
-				$storage->set($chatmsg->getSkypeName(), $field, $value);
+				$this->storage->set($chatmsg->getSkypeName(), $field, $value);
 				return "Saved key ".$field;
 			} else {
 				return "Missing key and/or value";
@@ -50,7 +51,7 @@ class Brain extends BasePlugin implements PluginInterface
 			unset($tmp[0]);
 
 			if ($field) {
-				$value = $storage->get($chatmsg->getSkypeName(), $field);
+				$value = $this->storage->get($chatmsg->getSkypeName(), $field);
 
 				if (!$value) {
 					return "Key $field does not have any value";

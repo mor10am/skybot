@@ -1,12 +1,27 @@
 <?php
 
+use Skybot\Driver\Dummy;
+use Skybot\Config;
+use Monolog\Logger;
+use Monolog\Handler\NullHandler;
+
 class PingTest extends \PHPUnit_Framework_TestCase
 {
+	private $skybot;
+
+	protected function setUp()
+	{
+		$log = new Logger('test');
+		$log->pushHandler(new NullHandler());
+
+		$this->skybot = new \Skybot\Main(new Dummy(), new Config(), $log);
+	}
+
 	public function testPing()
 	{
-		$plugin = new \Skybot\Plugin\Ping();
+		$plugin = new \Skybot\Plugin\Ping($this->skybot);
 
-		$message = new \Skybot\Skype\Message();
+		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ping");
 		$message->setSkypeName("myskypename");
@@ -19,9 +34,9 @@ class PingTest extends \PHPUnit_Framework_TestCase
 
 	public function testPingDM()
 	{
-		$plugin = new \Skybot\Plugin\Ping();
+		$plugin = new \Skybot\Plugin\Ping($this->skybot);
 
-		$message = new \Skybot\Skype\Message();
+		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ping me");
 		$message->setSkypeName("myskypename");
@@ -34,9 +49,9 @@ class PingTest extends \PHPUnit_Framework_TestCase
 
 	public function testFailedPing()
 	{
-		$plugin = new \Skybot\Plugin\Ping();
+		$plugin = new \Skybot\Plugin\Ping($this->skybot);
 
-		$message = new \Skybot\Skype\Message();
+		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("pinga");
 		$message->setSkypeName("myskypename");

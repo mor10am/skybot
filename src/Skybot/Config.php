@@ -23,9 +23,11 @@ class Config
 
     public $conf = array();
 
-	public function __construct($filename)
+	public function __construct($filename = null)
 	{
-		$this->_load($filename);
+        if ($filename) {
+	       $this->_load($filename);
+        }
 	}
 
 	private function _load($filename)

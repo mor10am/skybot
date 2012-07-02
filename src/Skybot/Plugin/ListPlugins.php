@@ -13,21 +13,21 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
-use Skybot\Skype\Reply;
+use Skybot\Message\Reply;
+use Skybot\Message\Chat;
 
 class ListPlugins extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^plugins$/";
 	protected $description = "List all plugins.";
 
-	public function handle($chatmsg, $result)
+	public function handle(Chat $chatmsg, $result)
 	{
-		$dic = $chatmsg->getDic();
 
-		if (!$dic) return false;
-		if (!isset($dic['plugincontainer'])) return false;
+		if (!$this->skybot) return "No Skybot registered";
+		if (!$this->skybot->getPluginContainer()) return "No plugins registered.";
 
-		$plugins = $dic['plugincontainer']->getPlugins();
+		$plugins = $this->skybot->getPluginContainer()->getPlugins();
 
 		$i = 1;
 		$txt = "\r\nAvailable plugins:\r\n\r\n";

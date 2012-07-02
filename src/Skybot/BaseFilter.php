@@ -11,9 +11,6 @@
 
 namespace Skybot;
 
-use Skybot\Skype;
-use Skybot\Skype\Message;
-
 abstract class BaseFilter
 {
 	const DISABLED = 0;
@@ -23,6 +20,13 @@ abstract class BaseFilter
 	public $pri = 0;
 	public $pos = self::DISABLED;
 	public $description;
+
+	private $skybot;
+
+	public function __construct(\Skybot\Main $skybot)
+	{
+		$this->skybot = $skybot;
+	}
 
 	public function getPri()
 	{
@@ -42,5 +46,10 @@ abstract class BaseFilter
 	public function getDescription()
 	{
 		return $this->description;
+	}
+
+	public function getSkybot()
+	{
+		return $this->skybot;
 	}
 }

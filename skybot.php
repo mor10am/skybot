@@ -18,7 +18,6 @@ $loader = require_once 'vendor/autoload.php';
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Skybot\Skype\Message;
 use Symfony\Component\EventDispatcher\Event;
 
 if (isset($_SERVER['PWD'])) {
@@ -29,8 +28,6 @@ if (isset($_SERVER['PWD'])) {
 
 try {
 	$config = new \Skybot\Config($basedir."/config.yml");
-
-	$storage = new \Skybot\Storage($basedir."/skybot.db");
 
 } catch (Exception $e) {
 	die($e->getMessage()."\n");
@@ -45,28 +42,20 @@ if ($config->getPluginDir()) {
 $log = new Logger('skybot');
 $log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", Logger::DEBUG));
 
-$dic = new \Pimple();
-$dic['config'] = $config;
-$dic['log'] = $log;
-$dic['storage'] = $storage;
+$driver = new \Skybot\Driver\Skype();
 
-$skype = new \Skybot\Skype($dic);
+$skybot = new \Skybot\Main($driver, $config, $log);
 
-$plugincontainer = new \Skybot\PluginContainer($dic);
+$plugincontainer = new \Skybot\PluginContainer($skybot);
 
-$dic['skype'] = $skype;
-$dic['plugincontainer'] = $plugincontainer;
+$skybot->setPluginContainer($plugincontainer);
 
-$skype->addListener('skype.message', function(Event $chatmsg) use ($plugincontainer) {
+$skybot->addListener('skybot.message', function(Event $chatmsg) use ($plugincontainer) {
 	if (!$chatmsg->isMarked()) {
 		try {
 			$plugincontainer->parseMessage($chatmsg);
 		} catch (Exception $e) {
-			$dic = $chatmsg->getDic();
 
-			if ($dic['log']) {
-				$dic['log']->addError($e->getMessage());
-			}
 		}
 	}
 });
@@ -76,9 +65,9 @@ try {
 	$plugincontainer->loadFilters(array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/"));
 
 	do {
-	    $skype->handleChatMessages();
+	    $skybot->handleChatMessages();
 
-	    $skype->waitLoop(500);
+	    $skybot->waitLoop(500);
 
 	} while(true);
 

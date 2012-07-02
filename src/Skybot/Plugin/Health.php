@@ -13,24 +13,25 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
-use Skybot\Skype\Reply;
+use Skybot\Message\Reply;
+use Skybot\Message\Chat;
 
 class Health extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^health( me)?$/";
 	protected $description = "Get health statistics of Skybot.";
 
-	public function handle($chatmsg, $result)
+	public function handle(Chat $chatmsg, $result)
 	{
-		$dic = $chatmsg->getDic();
+		if (!$this->skybot) {
+			return "No Skybot registered";
+		}
 
 		$uptime = '???';
 		$msgserved = '0';
 
-		if (isset($dic['skype'])) {
-			$uptime = round((time()-$dic['skype']->timestamp) / 60);
-			$msgserved = $dic['skype']->messages_served;
-		}
+		$uptime = round((time()-$this->skybot->getStartupTime()) / 60);
+		$msgserved = $this->skybot->getMessagesServed();
 
 		$mem = round(memory_get_usage(true) / (1024*1024), 2);
 		$peak = round(memory_get_peak_usage(true) / (1024*1024), 2);

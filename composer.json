@@ -15,12 +15,11 @@
 		"symfony/event-dispatcher": "2.0.*",
 		"symfony/finder": "2.0.*",
 		"symfony/yaml": "2.0.*",
-		"pimple/pimple": "dev-master",
 		"monolog/monolog": "dev-master"
 	},
     "autoload": {
         "psr-0": {
             "Skybot": "src"
         }
-    }	
+    }
 }

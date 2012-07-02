@@ -13,14 +13,15 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
-use Skybot\Skype\Reply;
+use Skybot\Message\Reply;
+use Skybot\Message\Chat;
 
 class Ping extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^ping( me)?$/";
 	protected $description = "Answers a 'ping' with a 'pong'";
 
-	public function handle($chatmsg, $result)
+	public function handle(Chat $chatmsg, $result)
 	{
 		return "Hi, " . $chatmsg->getDispName() . ". Pong!";
 	}

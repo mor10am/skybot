@@ -12,28 +12,34 @@
 namespace Skybot;
 
 use Symfony\Component\Finder\Finder;
-use Skybot\Skype;
-use Skybot\Skype\Message;
-use Skybot\Skype\Reply;
+
+use Skybot\Message\Chat;
+use Skybot\Message\Reply;
 use Skybot\Plugin;
 
 class PluginContainer
 {
 	private $plugins = array();
 	private $filters = array();
-	private $dic;
 
-	public function __construct(\Pimple $dic)
+	private $skybot;
+
+	public function __construct(\Skybot\Main $skybot = null)
 	{
-		$this->dic = $dic;
+		$this->skybot = $skybot;
 	}
 
-	public function parseMessage(Message $chatmsg)
+	public function getSkybot()
+	{
+		return $this->skybot;
+	}
+
+	public function parseMessage(Chat $chatmsg)
 	{
 		foreach ($this->getFilters() as $filter) {
 			if ($filter->beforePlugins()) {
 				$ret = $filter->handle($chatmsg);
-				if (!$ret instanceof Message) break;
+				if (!$ret instanceof Chat) break;
 				$chatmsg = $ret;
 			}
 		}
@@ -58,7 +64,7 @@ class PluginContainer
 		foreach ($this->getFilters() as $filter) {
 			if ($filter->afterPlugins()) {
 				$ret = $filter->handle($chatmsg);
-				if (!$ret instanceof Message) break;
+				if (!$ret instanceof Chat) break;
 				$chatmsg = $ret;
 			}
 		}
@@ -72,6 +78,11 @@ class PluginContainer
 
 		if (!isset($this->plugins[$id])) {
 			$this->plugins[$id] = $plugin;
+
+			if ($this->skybot) {
+				$this->skybot->getLog()->addDebug("Added plugin ".get_class($plugin));
+			}
+
 			return true;
 		}
 	}
@@ -83,6 +94,11 @@ class PluginContainer
 		if (isset($this->filters[$id])) return true;
 
 		$this->filters[$id] = $filter;
+
+		if ($this->skybot) {
+			$this->skybot->getLog()->addDebug("Added filter ".get_class($filter));
+		}
+
 
 		ksort($this->filters);
 	}
@@ -121,12 +137,10 @@ class PluginContainer
 				if (!$implements) continue;
 
 				if (in_array("Skybot\\PluginInterface", $implements)) {
-					$plugin = new $classname($this->dic);
+					$plugin = new $classname($this->skybot);
 
 					if ($plugin instanceof \Skybot\BasePlugin) {
-						if ($this->addPlugin($plugin)) {
-							$this->dic['log']->addDebug("Added plugin $classname : ".$plugin->getDescription());
-						}
+						$this->addPlugin($plugin);
 					} else {
 						throw new \Exception("$classname is not instance of Skybot\\BasePlugin\n");
 					}
@@ -161,12 +175,10 @@ class PluginContainer
 					if (!$implements) continue;
 
 					if (in_array("Skybot\\FilterInterface", $implements)) {
-						$filter = new $classname($this->dic);
+						$filter = new $classname($this->skybot);
 
 						if ($filter instanceof \Skybot\BaseFilter) {
-							if ($this->addFilter($filter)) {
-								$this->dic['log']->addDebug("Added filter $classname : ".$filter->getDescription());
-							}
+							$this->addFilter($filter);
 						} else {
 							throw new \Exception("$classname is not instance of Skybot\\BaseFilter\n");
 						}

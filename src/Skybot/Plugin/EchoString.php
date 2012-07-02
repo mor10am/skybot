@@ -13,14 +13,15 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
-use Skybot\Skype\Reply;
+use Skybot\Message\Reply;
+use Skybot\Message\Chat;
 
 class EchoString extends BasePlugin implements PluginInterface
 {
 	protected $regexp = "/^echo( me)? (.*)$/ms";
 	protected $description = "Echo back the same text.";
 
-	public function handle($chatmsg, $result)
+	public function handle(Chat $chatmsg, $result)
 	{
 		return $result[2];
 	}

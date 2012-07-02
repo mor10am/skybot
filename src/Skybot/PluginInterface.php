@@ -11,9 +11,12 @@
 
 namespace Skybot;
 
-use Skybot\Skype\Message;
+use Skybot\Main;
+use Skybot\Message\Chat;
 
 interface PluginInterface
 {
-	function handle($chatmsg, $result);
+	function __construct(Main $skybot);
+	function handle(Chat $chatmsg, $result);
+	function initialize();
 }

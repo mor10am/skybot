@@ -1,15 +1,27 @@
 <?php
 
+use Skybot\Driver\Dummy;
+use Skybot\Config;
+use Monolog\Logger;
+use Monolog\Handler\NullHandler;
+
 class BrainTest extends \PHPUnit_Framework_TestCase
 {
+	private $skybot;
+
+	protected function setUp()
+	{
+		$log = new Logger('test');
+		$log->pushHandler(new NullHandler());
+
+		$this->skybot = new \Skybot\Main(new Dummy(), new Config(), $log);
+	}
+
 	public function testSet()
 	{
-		$plugin = new \Skybot\Plugin\Brain();
+		$plugin = new \Skybot\Plugin\Brain($this->skybot);
 
-		$dic = new \Pimple();
-		$dic['storage'] = new \Skybot\Storage('test.db');
-
-		$message = new \Skybot\Skype\Message(null, null, $dic);
+		$message = new \Skybot\Message\Chat(null, null, $this->skybot);
 
 		$message->setBody("@set test vas");
 		$message->setSkypeName("myskypename");
@@ -21,12 +33,9 @@ class BrainTest extends \PHPUnit_Framework_TestCase
 
 	public function testGet()
 	{
-		$plugin = new \Skybot\Plugin\Brain();
+		$plugin = new \Skybot\Plugin\Brain($this->skybot);
 
-		$dic = new \Pimple();
-		$dic['storage'] = new \Skybot\Storage('test.db');
-
-		$message = new \Skybot\Skype\Message(null, null, $dic);
+		$message = new \Skybot\Message\Chat(null, null, $this->skybot);
 
 		$message->setBody("@get test");
 		$message->setSkypeName("myskypename");
@@ -38,12 +47,9 @@ class BrainTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetNoValue()
 	{
-		$plugin = new \Skybot\Plugin\Brain();
+		$plugin = new \Skybot\Plugin\Brain($this->skybot);
 
-		$dic = new \Pimple();
-		$dic['storage'] = new \Skybot\Storage('test.db');
-
-		$message = new \Skybot\Skype\Message(null, null, $dic);
+		$message = new \Skybot\Message\Chat(null, null, $this->skybot);
 
 		$message->setBody("@get test2");
 		$message->setSkypeName("myskypename");

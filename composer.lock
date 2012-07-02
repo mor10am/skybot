@@ -1,30 +1,29 @@
 {
-    "hash": "44f8be61295fc8e0aea1262fe9768501",
+    "hash": "28e09d668f5bfa97518595f49283bd4a",
     "packages": [
         {
             "package": "monolog/monolog",
             "version": "dev-master",
-            "source-reference": "6cbdc0410c08fb03d7eee6b69126661fcbb89c41"
-        },
-        {
-            "package": "pimple/pimple",
-            "version": "dev-master",
-            "source-reference": "86cae5c9e85cd02f1703c774ddf12f2448a5938c"
+            "source-reference": "6cbdc0410c08fb03d7eee6b69126661fcbb89c41",
+            "commit-date": "1340715384"
         },
         {
             "package": "symfony/event-dispatcher",
             "version": "2.0.x-dev",
-            "source-reference": "v2.0.15"
+            "source-reference": "v2.0.15",
+            "commit-date": "1337100992"
         },
         {
             "package": "symfony/finder",
             "version": "2.0.x-dev",
-            "source-reference": "v2.0.15"
+            "source-reference": "v2.0.15",
+            "commit-date": "1337362678"
         },
         {
             "package": "symfony/yaml",
             "version": "2.0.x-dev",
-            "source-reference": "c123857e83b279a4a1300ef27cc8cc25d8ea84f9"
+            "source-reference": "c123857e83b279a4a1300ef27cc8cc25d8ea84f9",
+            "commit-date": "1339254257"
         }
     ],
     "packages-dev": null,
@@ -33,7 +32,6 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "pimple/pimple": 20,
         "monolog/monolog": 20
     }
 }

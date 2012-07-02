@@ -11,9 +11,11 @@
 
 namespace Skybot;
 
-use Skybot\Skype\Message;
+use Skybot\Main;
+use Skybot\Message\Chat;
 
 interface FilterInterface
 {
-	function handle(Message $chatmsg);
+	function __construct(Main $skybot);
+	function handle(Chat $chatmsg);
 }

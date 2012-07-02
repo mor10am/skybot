@@ -11,33 +11,36 @@
 
 namespace Skybot;
 
-use Skybot\Skype;
-use Skybot\Skype\Message;
-use Skybot\Skype\Reply;
+use Skybot\Message\Chat;
+use Skybot\Message\Reply;
 
 abstract class BasePlugin
 {
-	protected $dic;
+	protected $skybot;
 	protected $regexp;
 	protected $description;
 	protected $async = false;
 
-	public function __construct(\Pimple $dic = null)
+	public function __construct(\Skybot\Main $skybot)
 	{
-		$this->dic = $dic;
+		$this->skybot = $skybot;
+		$this->initialize();
 	}
 
-	public function run(Message $chatmsg)
+	public function initialize()
+	{
+	}
+
+	public function run(Chat $chatmsg)
 	{
 		if (!$this->getRegexp()) return false;
 		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
 
 		if (!$chatmsg->isInternal()) {
-			if (isset($this->dic['skype'])) {
-				if (!$this->dic['skype']->isFriend($chatmsg->getSkypeName())) {
-					if ($this->dic['log']) {
-						$this->dic['log']->addWarning($chatmsg->getSkypeName()." is not a friend.");
-					}
+			if (isset($this->skybot)) {
+				if (!$this->skybot->isFriend($chatmsg->getSkypeName())) {
+					$this->skybot->getLog()->addWarning($chatmsg->getSkypeName()." is not a friend.");
+
 					return true;
 				}
 			}
@@ -54,23 +57,22 @@ abstract class BasePlugin
 
 			$payload = base64_encode(serialize($asyncmsg));
 
-			$this->dic['log']->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->skypename}");
+			$this->skybot->getLog()->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->skypename}");
 
             $dir = false;
 
-            if (isset($this->dic['config'])) {
-                $dir = $this->dic['config']->base_dir;
+            $config = $this->skybot->getConfig();
+            $dir = $config->base_dir;
 
-                if ($dir) {
-                        $dir = $dir."/";
-                }
-
-                $cmd = $this->dic['config']->async_cmd;
+            if ($dir) {
+                    $dir = $dir."/";
             }
+
+            $cmd = $this->dic['config']->async_cmd;
 
             $cmd = "/usr/bin/daemon --chdir=".$dir." ".$cmd." ".$payload;
 
-			$this->dic['log']->addDebug($cmd);
+			$this->skybot->getLog()->addDebug($cmd);
 
 			exec($cmd, $retval);
 
