@@ -14,18 +14,53 @@ class Dummy implements DriverInterface
 	{
 	}
 
-	public function waitLoop($millisec)
-	{
-		usleep($millisec*1000);
-	}
-
-	public function sendCommand($command)
-	{
-		return true;
-	}
-
 	public function isContact($name)
 	{
 		return true;
+	}
+
+	public function refuseCalls()
+	{
+	}
+
+	public function getRecentChats()
+	{
+		return array();
+	}
+
+	public function getMissedChats()
+	{
+		return array();
+	}
+
+	public function getRecentMessagesForChat($chatid)
+	{
+		return array();
+	}
+
+	public function getMessageProperties($msgid)
+	{
+		return array();
+	}
+
+	public function getChatProperty($chatid, $property)
+	{
+		return '';
+	}
+
+	public function sendDirectMessage(Direct $dm)
+	{
+	}
+
+	public function sendReply(Reply $reply)
+	{
+	}
+
+	public function createChatWith($contactname)
+	{
+	}
+
+	public function markSeen(Chat $chatmsg)
+	{
 	}
 }
