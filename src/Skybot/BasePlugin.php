@@ -68,7 +68,7 @@ abstract class BasePlugin
                     $dir = $dir."/";
             }
 
-            $cmd = $this->dic['config']->async_cmd;
+            $cmd = $config->async_cmd;
 
             $cmd = "/usr/bin/daemon --chdir=".$dir." ".$cmd." ".$payload;
 

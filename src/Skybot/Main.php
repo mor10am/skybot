@@ -236,7 +236,7 @@ class Main extends EventDispatcher
                 if (!$chatid) continue;
             }
 
-            $msg = new Chat(null, $chatid, $this->dic);
+            $msg = new Chat(null, $chatid, $this);
             $msg->setBody($body);
             $msg->setSkypeName($skypename);
             $msg->setInternal();
