@@ -62,6 +62,11 @@ class Main extends EventDispatcher
         $log->addInfo("Starting Skybot as ".$this->botname." and listening on port $port");
     }
 
+    public function getBotName()
+    {
+        return $this->botname;
+    }
+
     public function getStartupTime()
     {
         return $this->timestamp;
