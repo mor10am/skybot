@@ -43,6 +43,10 @@ $log = new Logger('skybot');
 $log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", Logger::DEBUG));
 
 $driver = new \Skybot\Driver\Skype();
+$driver->initialize(array(
+		'appname'	=> 'SKYBOT',
+		'protocol'	=> 7
+	));
 
 $skybot = new \Skybot\Main($driver, $config, $log);
 
@@ -67,7 +71,7 @@ try {
 	do {
 	    $skybot->handleChatMessages();
 
-	    $skybot->waitLoop(500);
+	    usleep(500000);
 
 	} while(true);
 

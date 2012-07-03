@@ -15,7 +15,7 @@ use \Symfony\Component\Yaml\Yaml;
 
 class Config
 {
-	public $skypename;
+	public $contactname;
 	public $plugin_dir;
     public $filter_dir;
     public $log_dir;
@@ -40,13 +40,13 @@ class Config
 
         $this->conf = $config['skybot'];
 
-        if (isset($config['skybot']['skypename'])) {
-        	$this->skypename = $config['skybot']['skypename'];
-        	if (!$this->skypename) {
-        		throw new \Exception("Skypename is blank.");
+        if (isset($config['skybot']['contactname'])) {
+        	$this->contactname = $config['skybot']['contactname'];
+        	if (!$this->contactname) {
+        		throw new \Exception("Contactname is blank.");
         	}
         } else {
-        	throw new \Exception("The config skybot.skypename is missing!");
+        	throw new \Exception("The config skybot.contactname is missing!");
         }
 
         if (isset($config['skybot']['plugin_dir'])) {
@@ -86,9 +86,9 @@ class Config
         $this->conf[$field] = $value;
     }
 
-    public function getSkypeName()
+    public function getContactName()
     {
-    	return $this->skypename;
+    	return $this->contactname;
     }
 
     public function getPluginDir()

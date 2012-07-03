@@ -25,9 +25,9 @@ class Main extends EventDispatcher
 {
     private $timestamp;
 
-    private $botname;
+    private $contactname;
     private $messages = array();
-    private $calls = array();
+
     private $personalchats = array();
     private $chatnames = array();
 
@@ -47,7 +47,7 @@ class Main extends EventDispatcher
         $this->config = $config;
         $this->log = $log;
 
-    	$this->botname = $config->getSkypeName();
+    	$this->contactname = $config->getContactName();
         $this->timestamp = time();
 
         $port = $config->getServerPort();
@@ -59,12 +59,12 @@ class Main extends EventDispatcher
             $port = "<NO PORT>";
         }
 
-        $log->addInfo("Starting Skybot as ".$this->botname." and listening on port $port");
+        $log->addInfo("Starting Skybot as ".$this->contactname." and listening on port $port");
     }
 
-    public function getBotName()
+    public function getContactName()
     {
-        return $this->botname;
+        return $this->contactname;
     }
 
     public function getStartupTime()
@@ -120,9 +120,7 @@ class Main extends EventDispatcher
 
     private function loadAndEmitChatMessages($chatid)
     {
-        $result = $this->driver->sendCommand("GET CHAT {$chatid} RECENTCHATMESSAGES");
-
-        $recentmessages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
+        $recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid);
 
         if (!count($recentmessages)) return true;
 
@@ -134,7 +132,7 @@ class Main extends EventDispatcher
 
             $chatmsg = new Chat($msgid, $chatid, $this);
 
-            if ($chatmsg->getSkypeName() == $this->config->getSkypeName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
+            if ($chatmsg->getContactName() == $this->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
                 continue;
             }
 
@@ -146,30 +144,17 @@ class Main extends EventDispatcher
 
     private function _getMissedChats()
     {
-        $result = $this->driver->sendCommand("SEARCH MISSEDCHATS");
-
-        $chats = explode(", ", substr($result, 6));
-
-        return $chats;
+        return $this->getDriver()->getMissedChats();
     }
 
     private function _getRecentChats()
     {
-        $result = $this->driver->sendCommand("SEARCH RECENTCHATS");
-
-        $chats = explode(", ", substr($result, 6));
-
-        return $chats;
+        return $this->getDriver()->getRecentChats();
     }
 
-    public function isFriend($skypename)
+    public function isContact($contactname)
     {
-        return $this->driver->isContact($skypename);
-    }
-
-    public function waitLoop($millisec)
-    {
-        $this->driver->waitLoop($millisec);
+        return $this->driver->isContact($contactname);
     }
 
     private function _getMessagesFromPort()
@@ -203,7 +188,7 @@ class Main extends EventDispatcher
             if (!$matches = self::parseTcpMessage($txt)) continue;
 
             $chatname = strtolower(trim($matches[1]));
-            $skypename = trim($matches[2]);
+            $contactname = trim($matches[2]);
             $body = $matches[3];
 
             if (substr($chatname, 0, 1) == '#') {
@@ -220,9 +205,7 @@ class Main extends EventDispatcher
                 $chatid = false;
 
                 foreach ($chats as $cid) {
-                    $result = $this->driver->sendCommand("GET CHAT $cid FRIENDLYNAME");
-
-                    $friendlyname = strtolower(trim(str_replace("CHAT $cid FRIENDLYNAME", "", $result)));
+                    $friendlyname = $this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME');
 
                     $this->chatnames[$friendlyname] = $cid;
 
@@ -238,7 +221,7 @@ class Main extends EventDispatcher
 
             $msg = new Chat(null, $chatid, $this);
             $msg->setBody($body);
-            $msg->setSkypeName($skypename);
+            $msg->setContactName($contactname);
             $msg->setInternal();
 
             $this->dispatch('skybot.message', $msg);
@@ -259,51 +242,31 @@ class Main extends EventDispatcher
         if ($reply->isDM()) {
             $this->directMessage($reply->createDirectMessage());
         } else {
-            $this->driver->sendCommand("CHATMESSAGE ".$reply->getChatMsg()->getChatId()." ".$reply->getBody());
+            $this->getDriver()->sendReply($reply);
+
             $this->log->addInfo("Skybot reply to ".$reply->getChatMsg()->getDispName(). " : ".$reply->getBody());
         }
     }
 
-    public function directMessage(DirectMessage $dm)
+    public function directMessage(Direct $dm)
     {
-        if (!isset($this->personalchats[$dm->getSkypeName()])) {
-            $result = $this->driver->invoke("CHAT CREATE ".$dm->getSkypeName());
+        if (!isset($this->personalchats[$dm->getContactName()])) {
 
-            $tmp = explode(' ', $result);
+            $chatid = $this->getDriver()->createChatWith($dm->getContactName());
 
-            if (isset($tmp[1])) {
-                $chatid = $tmp[1];
-                $this->personalchats[$dm->getSkypeName()] = $chatid;
-            }
+            $this->personalchats[$dm->getContactName()] = $chatid;
+
         } else {
-            $chatid = $this->personalchats[$dm->getSkypeName()];
+            $chatid = $this->personalchats[$dm->getContactName()];
         }
 
-        $this->driver->invoke("CHATMESSAGE ".$chatid." ".$dm->getBody());
-        $this->log->addInfo("Skybot DM to ".$dm->getSkypeName(). " : ".$dm->getBody());
+        $this->getDriver()->sendDirectMessage($dm);
+
+        $this->log->addInfo("Skybot DM to ".$dm->getContactName(). " : ".$dm->getBody());
     }
 
     private function _refuseCalls()
     {
-        $result = $this->driver->sendCommand("SEARCH CALLS");
-        $calls = explode(", ", substr($result, 6));
-
-        foreach ($calls as $callid) {
-            if (!$callid) continue;
-
-            if (isset($this->calls[$callid])) continue;
-            $this->calls[$callid] = true;
-
-            $result = $this->driver->sendCommand("GET CALL $callid STATUS");
-            $t = explode(' ', $result);
-
-            if (!isset($t[3])) continue;
-
-            $status = $t[3];
-
-            if ($status == 'RINGING') {
-                $this->driver->sendCommand("ALTER CALL $callid END HANGUP");
-            }
-        }
+        $this->getDriver()->refuseCalls();
     }
 }

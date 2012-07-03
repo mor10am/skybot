@@ -1,9 +1,8 @@
 skybot:
-  skypename: "<skybot skypename>"
+  contactname: "<skybot contactname to be filtered out of conversation>"
   plugin_dir: "<full path to plugins>"
   filter_dir: "<full path to filters>""
   log_dir: "<full path of log dir>"
   base_dir: "<base path of the project>"
   async_cmd: "<relative (to the base_dir) path and filename of async command>"
   server_port: <port>
-  

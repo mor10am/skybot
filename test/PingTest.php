@@ -24,7 +24,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ping");
-		$message->setSkypeName("myskypename");
+		$message->setContactName("myskypename");
 
 		$response = $plugin->run($message);
 
@@ -39,7 +39,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ping me");
-		$message->setSkypeName("myskypename");
+		$message->setContactName("myskypename");
 
 		$response = $plugin->run($message);
 
@@ -54,7 +54,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("pinga");
-		$message->setSkypeName("myskypename");
+		$message->setContactName("myskypename");
 
 		$response = $plugin->run($message);
 

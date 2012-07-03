@@ -19,14 +19,14 @@ class Reply
 	private $body;
 	private $dm = false;
 	private $chatmsg;
-	private $skypename;
+	private $contactname;
 	private $chatid;
 
 	public function __construct($chatmsg, $body, $dm = false)
 	{
 		$this->chatmsg = $chatmsg;
 		$this->chatid = $chatmsg->getChatId();
-		$this->skypename = $chatmsg->getSkypeName();
+		$this->contactname = $chatmsg->getContactName();
 		$this->body = $body;
 		$this->dm = $dm;
 	}
@@ -46,9 +46,9 @@ class Reply
 		return $this->chatmsg;
 	}
 
-	public function getSkypeName()
+	public function getContactName()
 	{
-		return $this->skypename;
+		return $this->contactname;
 	}
 
 	public function getBody()
@@ -63,6 +63,6 @@ class Reply
 
 	public function createDirectMessage()
 	{
-		return new Direct($this->skypename, $this->body);
+		return new Direct($this->contactname, $this->chatid, $this->body);
 	}
 }

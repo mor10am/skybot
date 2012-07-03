@@ -38,8 +38,8 @@ abstract class BasePlugin
 
 		if (!$chatmsg->isInternal()) {
 			if (isset($this->skybot)) {
-				if (!$this->skybot->isFriend($chatmsg->getSkypeName())) {
-					$this->skybot->getLog()->addWarning($chatmsg->getSkypeName()." is not a friend.");
+				if (!$this->skybot->isContact($chatmsg->getContactName())) {
+					$this->skybot->getLog()->addWarning($chatmsg->getContactName()." is not a friend.");
 
 					return true;
 				}
@@ -57,7 +57,7 @@ abstract class BasePlugin
 
 			$payload = base64_encode(serialize($asyncmsg));
 
-			$this->skybot->getLog()->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->skypename}");
+			$this->skybot->getLog()->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->contactname}");
 
             $dir = false;
 

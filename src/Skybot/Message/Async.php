@@ -16,7 +16,7 @@ class Async
     public $messageid;
     public $body;
     public $timestamp;
-    public $skypename;
+    public $contactname;
     public $chatid;
     public $result;
     public $plugin;
@@ -32,11 +32,11 @@ class Async
 
         if (!$port) return false;
 
-        if (!$this->skypename) {
-            $this->skypename = 'async';
+        if (!$this->contactname) {
+            $this->contactname = 'async';
         }
 
-        $txt = "[".$this->chatid."][".$this->skypename."] echo ".$txt;
+        $txt = "[".$this->chatid."][".$this->contactname."] echo ".$txt;
 
         if (!$socket = fsockopen('127.0.0.1', $port, $errno, $errstr, 2)) {
             $this->skybot->getLog()->addError($errstr);
@@ -62,9 +62,9 @@ class Async
         return $this->dm;
     }
 
-    public function getSkypeName()
+    public function getContactName()
     {
-        return $this->skypename;
+        return $this->contactname;
     }
 
     public function getChatId()
