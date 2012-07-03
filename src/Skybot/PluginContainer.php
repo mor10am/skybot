@@ -77,7 +77,6 @@ class PluginContainer
 		$id = get_class($plugin);
 
 		if (!isset($this->plugins[$id])) {
-			$plugin->initialize();
 			$this->plugins[$id] = $plugin;
 
 			if ($this->skybot) {
@@ -93,6 +92,7 @@ class PluginContainer
 		$id = $filter->getPri().'_'.get_class($filter);
 
 		if (isset($this->filters[$id])) return true;
+
 
 		$this->filters[$id] = $filter;
 
