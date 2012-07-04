@@ -13,7 +13,6 @@ namespace Skybot\Plugin;
 
 use Skybot\BasePlugin;
 use Skybot\PluginInterface;
-use Skybot\Message\Reply;
 use Skybot\Message\Chat;
 
 class Health extends BasePlugin implements PluginInterface
