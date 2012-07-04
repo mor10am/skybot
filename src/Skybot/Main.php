@@ -23,250 +23,250 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Main extends EventDispatcher
 {
-    private $timestamp;
+	private $timestamp;
 
-    private $contactname;
-    private $messages = array();
+	private $contactname;
+	private $messages = array();
 
-    private $personalchats = array();
-    private $chatnames = array();
+	private $personalchats = array();
+	private $chatnames = array();
 
-    private $clients = array();
-    private $socket;
+	private $clients = array();
+	private $socket;
 
-    private $messages_served = 0;
+	private $messages_served = 0;
 
-    private $driver;
-    private $config;
-    private $log;
-    private $plugincontainer;
+	private $driver;
+	private $config;
+	private $log;
+	private $plugincontainer;
 
-    public function __construct(DriverInterface $driver, Config $config, \Monolog\Logger $log)
-    {
-        $this->driver = $driver;
-        $this->config = $config;
-        $this->log = $log;
+	public function __construct(DriverInterface $driver, Config $config, \Monolog\Logger $log)
+	{
+		$this->driver = $driver;
+		$this->config = $config;
+		$this->log = $log;
 
-    	$this->contactname = $config->getContactName();
-        $this->timestamp = time();
+		$this->contactname = $config->getContactName();
+		$this->timestamp = time();
 
-        $port = $config->getServerPort();
+		$port = $config->getServerPort();
 
-        if ($port and is_numeric($port)) {
-            $this->socket = socket_create_listen($port);
-            socket_set_nonblock($this->socket);
-        } else {
-            $port = "<NO PORT>";
-        }
+		if ($port and is_numeric($port)) {
+			$this->socket = socket_create_listen($port);
+			socket_set_nonblock($this->socket);
+		} else {
+			$port = "<NO PORT>";
+		}
 
-        $log->addInfo("Starting Skybot as ".$this->contactname." and listening on port $port");
-    }
+		$log->addInfo("Starting Skybot as ".$this->contactname." and listening on port $port");
+	}
 
-    public function getContactName()
-    {
-        return $this->contactname;
-    }
+	public function getContactName()
+	{
+		return $this->contactname;
+	}
 
-    public function getStartupTime()
-    {
-        return $this->timestamp;
-    }
+	public function getStartupTime()
+	{
+		return $this->timestamp;
+	}
 
-    public function getMessagesServed()
-    {
-        return $this->messages_served;
-    }
+	public function getMessagesServed()
+	{
+		return $this->messages_served;
+	}
 
-    public function setPluginContainer(PluginContainer $plugincontainer)
-    {
-        $this->plugincontainer = $plugincontainer;
-    }
+	public function setPluginContainer(PluginContainer $plugincontainer)
+	{
+		$this->plugincontainer = $plugincontainer;
+	}
 
-    public function getPluginContainer()
-    {
-        return $this->plugincontainer;
-    }
+	public function getPluginContainer()
+	{
+		return $this->plugincontainer;
+	}
 
-    public function getLog()
-    {
-        return $this->log;
-    }
+	public function getLog()
+	{
+		return $this->log;
+	}
 
-    public function getConfig()
-    {
-        return $this->config;
-    }
+	public function getConfig()
+	{
+		return $this->config;
+	}
 
-    public function getDriver()
-    {
-        return $this->driver;
-    }
+	public function getDriver()
+	{
+		return $this->driver;
+	}
 
-    public function handleChatMessages()
-    {
-        $this->_refuseCalls();
+	public function handleChatMessages()
+	{
+		$this->_refuseCalls();
 
-        $this->_getMessagesFromPort();
+		$this->_getMessagesFromPort();
 
-        $chats = $this->_getMissedChats();
+		$chats = $this->_getMissedChats();
 
-        if (!count($chats)) return false;
+		if (!count($chats)) return false;
 
-        foreach ($chats as $chatid) {
-            if (!$chatid) continue;
-            $this->loadAndEmitChatMessages($chatid);
-        }
-    }
+		foreach ($chats as $chatid) {
+			if (!$chatid) continue;
+			$this->loadAndEmitChatMessages($chatid);
+		}
+	}
 
-    private function loadAndEmitChatMessages($chatid)
-    {
-        $recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid);
+	private function loadAndEmitChatMessages($chatid)
+	{
+		$recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid);
 
-        if (!count($recentmessages)) return true;
+		if (!count($recentmessages)) return true;
 
-        $newmessages = array_diff($recentmessages, $this->messages);
+		$newmessages = array_diff($recentmessages, $this->messages);
 
-        foreach ($newmessages as $msgid) {
+		foreach ($newmessages as $msgid) {
 
-            $this->messages[] = $msgid;
+			$this->messages[] = $msgid;
 
-            $chatmsg = new Chat($msgid, $chatid, $this);
+			$chatmsg = new Chat($msgid, $chatid, $this);
 
-            if ($chatmsg->getContactName() == $this->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
-                continue;
-            }
+			if ($chatmsg->getContactName() == $this->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
+				continue;
+			}
 
-            $this->dispatch('skybot.message', $chatmsg);
+			$this->dispatch('skybot.message', $chatmsg);
 
-            $chatmsg->mark();
-        }
-    }
+			$chatmsg->mark();
+		}
+	}
 
-    private function _getMissedChats()
-    {
-        return $this->getDriver()->getMissedChats();
-    }
+	private function _getMissedChats()
+	{
+		return $this->getDriver()->getMissedChats();
+	}
 
-    private function _getRecentChats()
-    {
-        return $this->getDriver()->getRecentChats();
-    }
+	private function _getRecentChats()
+	{
+		return $this->getDriver()->getRecentChats();
+	}
 
-    public function isContact($contactname)
-    {
-        return $this->driver->isContact($contactname);
-    }
+	public function isContact($contactname)
+	{
+		return $this->driver->isContact($contactname);
+	}
 
-    private function _getMessagesFromPort()
-    {
-        if (!is_resource($this->socket)) return true;
+	private function _getMessagesFromPort()
+	{
+		if (!is_resource($this->socket)) return true;
 
-        if (($client = @socket_accept($this->socket)) !== false) {
-            $this->clients[] = $client;
-        }
+		if (($client = @socket_accept($this->socket)) !== false) {
+			$this->clients[] = $client;
+		}
 
-        if (!count($this->clients)) return true;
+		if (!count($this->clients)) return true;
 
-        $r = $this->clients;
-        $w = NULL;
-        $e = $this->clients;
+		$r = $this->clients;
+		$w = NULL;
+		$e = $this->clients;
 
-        socket_select($r, $w, $e, 0, 500);
+		socket_select($r, $w, $e, 0, 500);
 
-        if (count($e)) {
-            $this->clients = array_diff($this->clients, $e);
-        }
+		if (count($e)) {
+			$this->clients = array_diff($this->clients, $e);
+		}
 
-        foreach ($r as $client) {
-            $bytes = socket_recv($client, $txt, 1024, MSG_DONTWAIT);
-            if (!$bytes) continue;
+		foreach ($r as $client) {
+			$bytes = socket_recv($client, $txt, 1024, MSG_DONTWAIT);
+			if (!$bytes) continue;
 
-            socket_getpeername($client, $address, $port);
+			socket_getpeername($client, $address, $port);
 
-            $this->log->addWarning("Message from $address : $txt");
+			$this->log->addWarning("Message from $address : $txt");
 
-            if (!$matches = self::parseTcpMessage($txt)) continue;
+			if (!$matches = self::parseTcpMessage($txt)) continue;
 
-            $chatname = mb_strtolower(trim($matches[1]));
-            $contactname = trim($matches[2]);
-            $body = $matches[3];
+			$chatname = mb_strtolower(trim($matches[1]));
+			$contactname = trim($matches[2]);
+			$body = $matches[3];
 
-            if (substr($chatname, 0, 1) == '#') {
-                $this->chatnames[$chatname] = $chatname;
-            }
+			if (substr($chatname, 0, 1) == '#') {
+				$this->chatnames[$chatname] = $chatname;
+			}
 
-            if (isset($this->chatnames[$chatname])) {
-                $chatid = $this->chatnames[$chatname];
-            } else {
-                $chats = $this->_getRecentChats();
+			if (isset($this->chatnames[$chatname])) {
+				$chatid = $this->chatnames[$chatname];
+			} else {
+				$chats = $this->_getRecentChats();
 
-                if (!count($chats)) continue;
+				if (!count($chats)) continue;
 
-                $chatid = false;
+				$chatid = false;
 
-                foreach ($chats as $cid) {
-                    $friendlyname = mb_strtolower($this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME'));
+				foreach ($chats as $cid) {
+					$friendlyname = mb_strtolower($this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME'));
 
-                    $this->chatnames[$friendlyname] = $cid;
+					$this->chatnames[$friendlyname] = $cid;
 
-                    if (strpos($friendlyname, $chatname) !== false) {
-                        $this->chatnames[$chatname] = $cid;
-                        $chatid = $cid;
-                        break;
-                    }
-                }
+					if (strpos($friendlyname, $chatname) !== false) {
+						$this->chatnames[$chatname] = $cid;
+						$chatid = $cid;
+						break;
+					}
+				}
 
-                if (!$chatid) continue;
-            }
+				if (!$chatid) continue;
+			}
 
-            $chatmsg = new Chat(null, $chatid, $this);
-            $chatmsg->setBody($body);
-            $chatmsg->setContactName($contactname);
-            $chatmsg->setInternal();
+			$chatmsg = new Chat(null, $chatid, $this);
+			$chatmsg->setBody($body);
+			$chatmsg->setContactName($contactname);
+			$chatmsg->setInternal();
 
-            $this->dispatch('skybot.message', $chatmsg);
-        }
-    }
+			$this->dispatch('skybot.message', $chatmsg);
+		}
+	}
 
-    public static function parseTcpMessage($txt)
-    {
-        if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;
+	public static function parseTcpMessage($txt)
+	{
+		if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;
 
-        return $matches;
-    }
+		return $matches;
+	}
 
-    public function reply(Reply $reply)
-    {
-        $this->messages_served++;
+	public function reply(Reply $reply)
+	{
+		$this->messages_served++;
 
-        if ($reply->isDM()) {
-            $this->directMessage($reply->createDirectMessage());
-        } else {
-            $this->getDriver()->sendReply($reply);
+		if ($reply->isDM()) {
+			$this->directMessage($reply->createDirectMessage());
+		} else {
+			$this->getDriver()->sendReply($reply);
 
-            $this->log->addInfo("Skybot reply to ".$reply->getChatMsg()->getDispName(). " : ".$reply->getBody());
-        }
-    }
+			$this->log->addInfo("Skybot reply to ".$reply->getChatMsg()->getDispName(). " : ".$reply->getBody());
+		}
+	}
 
-    public function directMessage(Direct $dm)
-    {
-        if (!isset($this->personalchats[$dm->getContactName()])) {
+	public function directMessage(Direct $dm)
+	{
+		if (!isset($this->personalchats[$dm->getContactName()])) {
 
-            $chatid = $this->getDriver()->createChatWith($dm->getContactName());
+			$chatid = $this->getDriver()->createChatWith($dm->getContactName());
 
-            $this->personalchats[$dm->getContactName()] = $chatid;
+			$this->personalchats[$dm->getContactName()] = $chatid;
 
-        } else {
-            $chatid = $this->personalchats[$dm->getContactName()];
-        }
+		} else {
+			$chatid = $this->personalchats[$dm->getContactName()];
+		}
 
-        $this->getDriver()->sendDirectMessage($dm);
+		$this->getDriver()->sendDirectMessage($dm);
 
-        $this->log->addInfo("Skybot DM to ".$dm->getContactName(). " : ".$dm->getBody());
-    }
+		$this->log->addInfo("Skybot DM to ".$dm->getContactName(). " : ".$dm->getBody());
+	}
 
-    private function _refuseCalls()
-    {
-        $this->getDriver()->refuseCalls();
-    }
+	private function _refuseCalls()
+	{
+		$this->getDriver()->refuseCalls();
+	}
 }

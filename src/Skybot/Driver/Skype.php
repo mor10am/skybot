@@ -12,17 +12,17 @@ class Skype implements DriverInterface
 {
 	private $dbus;
 	private $proxy;
-    private $calls = array();
+	private $calls = array();
 
 	public function __construct()
 	{
-        $this->dbus = new \DBus(\Dbus::BUS_SESSION, true);
-        $this->proxy = $this->dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
+		$this->dbus = new \DBus(\Dbus::BUS_SESSION, true);
+		$this->proxy = $this->dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
 	}
 
 	private function _sendCommand($command)
 	{
-    	return $this->proxy->Invoke($command);
+		return $this->proxy->Invoke($command);
 	}
 
 	public function initialize($params = array())
@@ -31,45 +31,45 @@ class Skype implements DriverInterface
 			throw new \Exception("The initialize method needs to know the 'appname' and 'protocol' version");
 		}
 
-        $this->_sendCommand("NAME ".$params['appname']);
-        $this->_sendCommand("PROTOCOL ".$params['protocol']);
+		$this->_sendCommand("NAME ".$params['appname']);
+		$this->_sendCommand("PROTOCOL ".$params['protocol']);
 	}
 
 	public function isContact($name)
 	{
-        $result = $this->_sendCommand("SEARCH FRIENDS");
-        $friends = explode(", ", substr($result, 6));
+		$result = $this->_sendCommand("SEARCH FRIENDS");
+		$friends = explode(", ", substr($result, 6));
 
-        if (!count($friends)) return false;
+		if (!count($friends)) return false;
 
-        return (in_array($name, $friends));
+		return (in_array($name, $friends));
 	}
 
 	public function getMessageProperties($msgid)
 	{
 		$properties = array();
 
-        $result = $this->_sendCommand("GET CHATMESSAGE $msgid BODY");
+		$result = $this->_sendCommand("GET CHATMESSAGE $msgid BODY");
 
-        $template = "CHATMESSAGE $msgid BODY ";
-        $properties['body'] = trim(str_replace($template, "", $result));
+		$template = "CHATMESSAGE $msgid BODY ";
+		$properties['body'] = trim(str_replace($template, "", $result));
 
-        $result = $this->_sendCommand("GET CHATMESSAGE $msgid TIMESTAMP");
+		$result = $this->_sendCommand("GET CHATMESSAGE $msgid TIMESTAMP");
 
-        $template = "CHATMESSAGE $msgid TIMESTAMP ";
-        $properties['timestamp'] = trim(str_replace($template, "", $result));
+		$template = "CHATMESSAGE $msgid TIMESTAMP ";
+		$properties['timestamp'] = trim(str_replace($template, "", $result));
 
-        $result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_HANDLE");
+		$result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_HANDLE");
 
-        $template = "CHATMESSAGE $msgid FROM_HANDLE ";
-        $properties['contactname'] = trim(str_replace($template, "", $result));
+		$template = "CHATMESSAGE $msgid FROM_HANDLE ";
+		$properties['contactname'] = trim(str_replace($template, "", $result));
 
-        $result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_DISPNAME");
+		$result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_DISPNAME");
 
-        $template = "CHATMESSAGE $msgid FROM_DISPNAME ";
-        $properties['displayname'] = trim(str_replace($template, "", $result));
+		$template = "CHATMESSAGE $msgid FROM_DISPNAME ";
+		$properties['displayname'] = trim(str_replace($template, "", $result));
 
-        return $properties;
+		return $properties;
 	}
 
 	public function markSeen(Chat $chatmsg)
@@ -79,36 +79,36 @@ class Skype implements DriverInterface
 
 	public function getMissedChats()
 	{
-        $result = $this->_sendCommand("SEARCH MISSEDCHATS");
+		$result = $this->_sendCommand("SEARCH MISSEDCHATS");
 
-        $chats = explode(", ", substr($result, 6));
+		$chats = explode(", ", substr($result, 6));
 
-        return $chats;
+		return $chats;
 	}
 
 	public function getRecentChats()
 	{
-        $result = $this->_sendCommand("SEARCH RECENTCHATS");
+		$result = $this->_sendCommand("SEARCH RECENTCHATS");
 
-        $chats = explode(", ", substr($result, 6));
+		$chats = explode(", ", substr($result, 6));
 
-        return $chats;
+		return $chats;
 	}
 
 	public function getRecentMessagesForChat($chatid)
 	{
-        $result = $this->_sendCommand("GET CHAT {$chatid} RECENTCHATMESSAGES");
+		$result = $this->_sendCommand("GET CHAT {$chatid} RECENTCHATMESSAGES");
 
-        $recentmessages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
+		$recentmessages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
 
-        return $recentmessages;
+		return $recentmessages;
 	}
 
 	public function getChatProperty($chatid, $property)
 	{
-        $result = $this->_sendCommand("GET CHAT $chatid $property");
+		$result = $this->_sendCommand("GET CHAT $chatid $property");
 
-        return trim(str_replace("CHAT $chatid $property", "", $result));
+		return trim(str_replace("CHAT $chatid $property", "", $result));
 	}
 
 	public function sendReply(Reply $reply)
@@ -118,15 +118,15 @@ class Skype implements DriverInterface
 
 	public function createChatWith($contactname)
 	{
-        $result = $this->_sendCommand("CHAT CREATE ".$contactname);
+		$result = $this->_sendCommand("CHAT CREATE ".$contactname);
 
-        $tmp = explode(' ', $result);
+		$tmp = explode(' ', $result);
 
-        if (isset($tmp[1])) {
-            return $tmp[1];
-        } else {
-        	throw new \Exception("Unable to create chat with ".$contactname);
-        }
+		if (isset($tmp[1])) {
+			return $tmp[1];
+		} else {
+			throw new \Exception("Unable to create chat with ".$contactname);
+		}
 	}
 
 	public function sendDirectMessage(Direct $dm)
@@ -136,27 +136,27 @@ class Skype implements DriverInterface
 
 	public function refuseCalls()
 	{
-        $result = $this->_sendCommand("SEARCH CALLS");
-        $calls = explode(", ", substr($result, 6));
+		$result = $this->_sendCommand("SEARCH CALLS");
+		$calls = explode(", ", substr($result, 6));
 
-        if (!count($calls)) return true;
+		if (!count($calls)) return true;
 
-        foreach ($calls as $callid) {
-            if (!$callid) continue;
+		foreach ($calls as $callid) {
+			if (!$callid) continue;
 
-            if (isset($this->calls[$callid])) continue;
-            $this->calls[$callid] = true;
+			if (isset($this->calls[$callid])) continue;
+			$this->calls[$callid] = true;
 
-            $result = $this->_sendCommand("GET CALL $callid STATUS");
-            $t = explode(' ', $result);
+			$result = $this->_sendCommand("GET CALL $callid STATUS");
+			$t = explode(' ', $result);
 
-            if (!isset($t[3])) continue;
+			if (!isset($t[3])) continue;
 
-            $status = $t[3];
+			$status = $t[3];
 
-            if ($status == 'RINGING') {
-                $this->_sendCommand("ALTER CALL $callid END HANGUP");
-            }
-        }
+			if ($status == 'RINGING') {
+				$this->_sendCommand("ALTER CALL $callid END HANGUP");
+			}
+		}
 	}
 }

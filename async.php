@@ -17,9 +17,9 @@ use Monolog\Handler\StreamHandler;
 use Skybot\Message\Async;
 
 if (isset($_SERVER['PWD'])) {
-    $basedir = $_SERVER['PWD'];
+	$basedir = $_SERVER['PWD'];
 } else {
-    $basedir = __DIR__;
+	$basedir = __DIR__;
 }
 
 try {

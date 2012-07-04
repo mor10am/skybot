@@ -21,9 +21,9 @@ use Monolog\Handler\StreamHandler;
 use Symfony\Component\EventDispatcher\Event;
 
 if (isset($_SERVER['PWD'])) {
-    $basedir = $_SERVER['PWD'];
+	$basedir = $_SERVER['PWD'];
 } else {
-    $basedir = __DIR__;
+	$basedir = __DIR__;
 }
 
 try {
@@ -69,9 +69,9 @@ try {
 	$plugincontainer->loadFilters(array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/"));
 
 	do {
-	    $skybot->handleChatMessages();
+		$skybot->handleChatMessages();
 
-	    usleep(500000);
+		usleep(500000);
 
 	} while(true);
 

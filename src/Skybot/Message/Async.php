@@ -13,68 +13,68 @@ namespace Skybot\Message;
 
 class Async
 {
-    public $messageid;
-    public $body;
-    public $timestamp;
-    public $contactname;
-    public $chatid;
-    public $result;
-    public $plugin;
-    public $dm;
-    public $skybot;
+	public $messageid;
+	public $body;
+	public $timestamp;
+	public $contactname;
+	public $chatid;
+	public $result;
+	public $plugin;
+	public $dm;
+	public $skybot;
 
-    public function reply($txt)
-    {
-        if (!$this->skybot) {
-            return $txt;
+	public function reply($txt)
+	{
+		if (!$this->skybot) {
+			return $txt;
 
-        $port = $this->skybot->getConfig()->getServerPort();
+		$port = $this->skybot->getConfig()->getServerPort();
 
-        if (!$port) return false;
+		if (!$port) return false;
 
-        if (!$this->contactname) {
-            $this->contactname = 'async';
-        }
+		if (!$this->contactname) {
+			$this->contactname = 'async';
+		}
 
-        $txt = "[".$this->chatid."][".$this->contactname."] echo ".$txt;
+		$txt = "[".$this->chatid."][".$this->contactname."] echo ".$txt;
 
-        if (!$socket = fsockopen('127.0.0.1', $port, $errno, $errstr, 2)) {
-            $this->skybot->getLog()->addError($errstr);
-            return false;
-        }
+		if (!$socket = fsockopen('127.0.0.1', $port, $errno, $errstr, 2)) {
+			$this->skybot->getLog()->addError($errstr);
+			return false;
+		}
 
-        fwrite($socket, $txt, strlen($txt));
-        fflush($socket);
-        fclose($socket);
+		fwrite($socket, $txt, strlen($txt));
+		fflush($socket);
+		fclose($socket);
 
-        $socket = null;
+		$socket = null;
 
-        return true;
-    }
+		return true;
+	}
 
-    public function setDM()
-    {
-        $this->dm = true;
-    }
+	public function setDM()
+	{
+		$this->dm = true;
+	}
 
-    public function isDM()
-    {
-        return $this->dm;
-    }
+	public function isDM()
+	{
+		return $this->dm;
+	}
 
-    public function getContactName()
-    {
-        return $this->contactname;
-    }
+	public function getContactName()
+	{
+		return $this->contactname;
+	}
 
-    public function getChatId()
-    {
-        return $this->chatid;
-    }
+	public function getChatId()
+	{
+		return $this->chatid;
+	}
 
-    public function getBody()
-    {
-        return $this->body;
-    }
+	public function getBody()
+	{
+		return $this->body;
+	}
 }
 

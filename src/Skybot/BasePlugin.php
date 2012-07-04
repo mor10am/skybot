@@ -59,18 +59,18 @@ abstract class BasePlugin
 
 			$this->skybot->getLog()->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->contactname}");
 
-            $dir = false;
+			$dir = false;
 
-            $config = $this->skybot->getConfig();
-            $dir = $config->base_dir;
+			$config = $this->skybot->getConfig();
+			$dir = $config->base_dir;
 
-            if ($dir) {
-                    $dir = $dir."/";
-            }
+			if ($dir) {
+					$dir = $dir."/";
+			}
 
-            $cmd = $config->async_cmd;
+			$cmd = $config->async_cmd;
 
-            $cmd = "/usr/bin/daemon --chdir=".$dir." ".$cmd." ".$payload;
+			$cmd = "/usr/bin/daemon --chdir=".$dir." ".$cmd." ".$payload;
 
 			$this->skybot->getLog()->addDebug($cmd);
 
