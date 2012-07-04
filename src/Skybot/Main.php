@@ -187,7 +187,7 @@ class Main extends EventDispatcher
 
             if (!$matches = self::parseTcpMessage($txt)) continue;
 
-            $chatname = strtolower(trim($matches[1]));
+            $chatname = mb_strtolower(trim($matches[1]));
             $contactname = trim($matches[2]);
             $body = $matches[3];
 
@@ -205,7 +205,7 @@ class Main extends EventDispatcher
                 $chatid = false;
 
                 foreach ($chats as $cid) {
-                    $friendlyname = $this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME');
+                    $friendlyname = mb_strtolower($this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME'));
 
                     $this->chatnames[$friendlyname] = $cid;
 
@@ -219,12 +219,12 @@ class Main extends EventDispatcher
                 if (!$chatid) continue;
             }
 
-            $msg = new Chat(null, $chatid, $this);
-            $msg->setBody($body);
-            $msg->setContactName($contactname);
-            $msg->setInternal();
+            $chatmsg = new Chat(null, $chatid, $this);
+            $chatmsg->setBody($body);
+            $chatmsg->setContactName($contactname);
+            $chatmsg->setInternal();
 
-            $this->dispatch('skybot.message', $msg);
+            $this->dispatch('skybot.message', $chatmsg);
         }
     }
 
