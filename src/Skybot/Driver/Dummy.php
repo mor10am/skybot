@@ -4,6 +4,10 @@ namespace Skybot\Driver;
 
 use Skybot\DriverInterface;
 
+use Skybot\Message\Chat;
+use Skybot\Message\Direct;
+use Skybot\Message\Reply;
+
 class Dummy implements DriverInterface
 {
 	public function __construct()
