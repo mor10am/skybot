@@ -17,7 +17,7 @@ interface DriverInterface
 	function getRecentMessagesForChat($chatid, Main $skybot);
 	function isContact($name);
 	function getContacts();
-	function getMessageProperties($msgid);
+	function getMessageProperties(Chat $chatmsg);
 	function getChatProperty($chatid, $property);
 	function sendDirectMessage(Direct $dm);
 	function sendReply(Reply $reply);

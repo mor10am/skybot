@@ -43,7 +43,7 @@ class Dummy implements DriverInterface
 		return array();
 	}
 
-	public function getMessageProperties($msgid)
+	public function getMessageProperties(Chat $chatmsg)
 	{
 		return array();
 	}

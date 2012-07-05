@@ -36,7 +36,7 @@ class Chat extends Event
 		$this->skybot = $skybot;
 
 		if ($msgid and $skybot) {
-			$properties = $skybot->getDriver()->getMessageProperties($msgid);
+			$properties = $skybot->getDriver()->getMessageProperties($this);
 			$this->setContactName($properties['contactname']);
 			$this->setDispName($properties['displayname']);
 			$this->setBody($properties['body']);

@@ -52,9 +52,11 @@ class Skype implements DriverInterface
 		return explode(", ", substr($result, 6));
 	}
 
-	public function getMessageProperties($msgid)
+	public function getMessageProperties(Chat $chatmsg)
 	{
 		$properties = array();
+
+		if (!$msgid = $chatmsg->getMessageId()) return array();
 
 		$result = $this->_sendCommand("GET CHATMESSAGE $msgid BODY");
 
