@@ -36,16 +36,6 @@ abstract class BasePlugin
 		if (!$this->getRegexp()) throw new \Exception("Plugin has not regular expression.");
 		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
 
-		if (!$chatmsg->isInternal()) {
-			if (isset($this->skybot)) {
-				if (!$this->skybot->isContact($chatmsg->getContactName())) {
-					$this->skybot->getLog()->addWarning($chatmsg->getContactName()." is not a friend.");
-
-					return true;
-				}
-			}
-		}
-
 		if (isset($result[1]) and trim($result[1]) == 'me') {
 			$chatmsg->setDM();
 		}
