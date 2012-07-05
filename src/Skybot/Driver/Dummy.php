@@ -4,6 +4,7 @@ namespace Skybot\Driver;
 
 use Skybot\DriverInterface;
 
+use Skybot\Main;
 use Skybot\Message\Chat;
 use Skybot\Message\Direct;
 use Skybot\Message\Reply;

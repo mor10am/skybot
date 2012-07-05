@@ -4,6 +4,7 @@ namespace Skybot\Driver;
 
 use Skybot\DriverInterface;
 
+use Skybot\Main;
 use Skybot\Message\Chat;
 use Skybot\Message\Direct;
 use Skybot\Message\Reply;
@@ -101,7 +102,7 @@ class Skype implements DriverInterface
 		return $chats;
 	}
 
-	public function getRecentMessagesForChat($chatid)
+	public function getRecentMessagesForChat($chatid, Main $skybot)
 	{
 		$result = $this->_sendCommand("GET CHAT {$chatid} RECENTCHATMESSAGES");
 
@@ -115,7 +116,13 @@ class Skype implements DriverInterface
 
 		$this->messages = $recentmessages;
 
-		return $newmessages;
+		$tmp = array();
+
+		foreach ($newmessages as $msgid) {
+			$tmp[] = new Chat($msgid, $chatid, $skybot);
+		}
+
+		return $tmp;
 	}
 
 	public function getChatProperty($chatid, $property)

@@ -119,13 +119,11 @@ class Main extends EventDispatcher
 
 	private function loadAndEmitChatMessages($chatid)
 	{
-		$recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid);
+		$recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid, $this);
 
 		if (!count($recentmessages)) return true;
 
-		foreach ($recentmessages as $msgid) {
-			$chatmsg = new Chat($msgid, $chatid, $this);
-
+		foreach ($recentmessages as $chatmsg) {
 			if ($chatmsg->getContactName() == $this->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
 				continue;
 			}

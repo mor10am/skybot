@@ -2,6 +2,7 @@
 
 namespace Skybot;
 
+use Skybot\Main;
 use Skybot\Message\Chat;
 use Skybot\Message\Direct;
 use Skybot\Message\Reply;
@@ -13,7 +14,7 @@ interface DriverInterface
 	function refuseCalls();
 	function getRecentChats();
 	function getMissedChats();
-	function getRecentMessagesForChat($chatid);
+	function getRecentMessagesForChat($chatid, Main $skybot);
 	function isContact($name);
 	function getContacts();
 	function getMessageProperties($msgid);
