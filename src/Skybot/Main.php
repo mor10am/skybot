@@ -181,7 +181,7 @@ class Main extends EventDispatcher
 
 			$chatname = mb_strtolower(trim($matches[1]));
 			$contactname = trim($matches[2]);
-			$body = $matches[3];
+			$body = $matches[3]." [".$contactname."]";
 
 			if (substr($chatname, 0, 1) == '#') {
 				$this->chatnames[$chatname] = $chatname;
