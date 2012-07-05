@@ -13,6 +13,7 @@ class Skype implements DriverInterface
 	private $dbus;
 	private $proxy;
 	private $calls = array();
+	private $messages = array();
 
 	public function __construct()
 	{
@@ -106,7 +107,15 @@ class Skype implements DriverInterface
 
 		$recentmessages = explode(", ", str_replace("CHAT {$chatid} RECENTCHATMESSAGES ", "", $result));
 
-		return $recentmessages;
+		if (!count($recentmessages)) return array();
+
+		$newmessages = array_diff($recentmessages, $this->messages);
+
+		if (!count($newmessages)) return array();
+
+		$this->messages = $recentmessages;
+
+		return $newmessages;
 	}
 
 	public function getChatProperty($chatid, $property)

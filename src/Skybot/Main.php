@@ -26,7 +26,6 @@ class Main extends EventDispatcher
 	private $timestamp;
 
 	private $contactname;
-	private $messages = array();
 
 	private $personalchats = array();
 	private $chatnames = array();
@@ -124,12 +123,7 @@ class Main extends EventDispatcher
 
 		if (!count($recentmessages)) return true;
 
-		$newmessages = array_diff($recentmessages, $this->messages);
-
-		foreach ($newmessages as $msgid) {
-
-			$this->messages[] = $msgid;
-
+		foreach ($recentmessages as $msgid) {
 			$chatmsg = new Chat($msgid, $chatid, $this);
 
 			if ($chatmsg->getContactName() == $this->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
