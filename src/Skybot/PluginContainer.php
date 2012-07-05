@@ -74,6 +74,8 @@ class PluginContainer
 
 	public function addPlugin(PluginInterface $plugin)
 	{
+		if (!$plugin->getRegexp()) throw new \Exception("Plugin has not regular expression.");
+
 		$id = get_class($plugin);
 
 		if (!isset($this->plugins[$id])) {

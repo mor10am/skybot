@@ -33,7 +33,6 @@ abstract class BasePlugin
 
 	public function run(Chat $chatmsg)
 	{
-		if (!$this->getRegexp()) throw new \Exception("Plugin has not regular expression.");
 		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
 
 		if (isset($result[1]) and trim($result[1]) == 'me') {
@@ -55,7 +54,7 @@ abstract class BasePlugin
 			$dir = $config->base_dir;
 
 			if ($dir) {
-					$dir = $dir."/";
+				$dir = $dir."/";
 			}
 
 			$cmd = $config->async_cmd;
