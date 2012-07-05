@@ -102,7 +102,6 @@ class PluginContainer
 			$this->skybot->getLog()->addDebug("Added filter ".get_class($filter));
 		}
 
-
 		ksort($this->filters);
 	}
 
