@@ -67,4 +67,9 @@ class Dummy implements DriverInterface
 	public function markSeen(Chat $chatmsg)
 	{
 	}
+
+	public function getContacts()
+	{
+		return array();
+	}
 }

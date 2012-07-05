@@ -37,12 +37,17 @@ class Skype implements DriverInterface
 
 	public function isContact($name)
 	{
-		$result = $this->_sendCommand("SEARCH FRIENDS");
-		$friends = explode(", ", substr($result, 6));
+		$friends = $this->getContacts();
 
 		if (!count($friends)) return false;
 
 		return (in_array($name, $friends));
+	}
+
+	public function getContacts()
+	{
+		$result = $this->_sendCommand("SEARCH FRIENDS");
+		return explode(", ", substr($result, 6));
 	}
 
 	public function getMessageProperties($msgid)

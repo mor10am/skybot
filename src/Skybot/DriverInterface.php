@@ -15,6 +15,7 @@ interface DriverInterface
 	function getMissedChats();
 	function getRecentMessagesForChat($chatid);
 	function isContact($name);
+	function getContacts();
 	function getMessageProperties($msgid);
 	function getChatProperty($chatid, $property);
 	function sendDirectMessage(Direct $dm);
