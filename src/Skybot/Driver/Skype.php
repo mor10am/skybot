@@ -116,7 +116,7 @@ class Skype implements DriverInterface
 
 		if (!count($newmessages)) return array();
 
-		$this->messages = $recentmessages;
+		$this->messages = array_merge($this->messages, $recentmessages);
 
 		$tmp = array();
 
