@@ -38,7 +38,7 @@ class Dummy implements DriverInterface
 		return array();
 	}
 
-	public function getRecentMessagesForChat($chatid)
+	public function getRecentMessagesForChat($chatid, Main $chatmsg)
 	{
 		return array();
 	}
