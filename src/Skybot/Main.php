@@ -19,7 +19,9 @@ use Skybot\PluginContainer;
 use Skybot\Message\Chat;
 use Skybot\Message\Reply;
 use Skybot\Message\Direct;
+
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Finder\Finder;
 
 class Main extends EventDispatcher
 {
@@ -39,6 +41,7 @@ class Main extends EventDispatcher
 	private $config;
 	private $log;
 	private $plugincontainer;
+	private $cronjobs = array();
 
 	public function __construct(DriverInterface $driver, Config $config, \Monolog\Logger $log)
 	{
@@ -101,23 +104,43 @@ class Main extends EventDispatcher
 		return $this->driver;
 	}
 
-	public function handleChatMessages()
+	public function handle()
 	{
 		$this->_refuseCalls();
 
-		$this->_getMessagesFromPort();
+		$this->_handleCronJobs();
 
+		$this->_handleMessagesFromPort();
+	}
+
+	private function _handleCronJobs()
+	{
+		foreach ($this->cronjobs as $job) {
+			try {
+				if ($chatmsg = $job->run()) {
+					if ($chatmsg instanceof Chat and $chatmsg->getChatId()) {
+						$this->dispatch('skybot.message', $chatmsg);
+					}
+				}
+			} catch (\Exception $e) {
+				$this->log->addError($e->getMessage());
+			}
+		}
+	}
+
+	private function _handleChatMessages()
+	{
 		$chats = $this->_getMissedChats();
 
 		if (!count($chats)) return false;
 
 		foreach ($chats as $chatid) {
 			if (!$chatid) continue;
-			$this->loadAndEmitChatMessages($chatid);
+			$this->_loadAndEmitChatMessages($chatid);
 		}
 	}
 
-	private function loadAndEmitChatMessages($chatid)
+	private function _loadAndEmitChatMessages($chatid)
 	{
 		$recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid, $this);
 
@@ -149,7 +172,7 @@ class Main extends EventDispatcher
 		return $this->driver->isContact($contactname);
 	}
 
-	private function _getMessagesFromPort()
+	private function _handleMessagesFromPort()
 	{
 		if (!is_resource($this->socket)) return true;
 
@@ -183,33 +206,7 @@ class Main extends EventDispatcher
 			$contactname = trim($matches[2]);
 			$body = $matches[3]." [".$contactname."]";
 
-			if (substr($chatname, 0, 1) == '#') {
-				$this->chatnames[$chatname] = $chatname;
-			}
-
-			if (isset($this->chatnames[$chatname])) {
-				$chatid = $this->chatnames[$chatname];
-			} else {
-				$chats = $this->_getRecentChats();
-
-				if (!count($chats)) continue;
-
-				$chatid = false;
-
-				foreach ($chats as $cid) {
-					$friendlyname = mb_strtolower($this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME'));
-
-					$this->chatnames[$friendlyname] = $cid;
-
-					if (strpos($friendlyname, $chatname) !== false) {
-						$this->chatnames[$chatname] = $cid;
-						$chatid = $cid;
-						break;
-					}
-				}
-
-				if (!$chatid) continue;
-			}
+			if (!$chatid = $this->findChat($chatname)) continue;
 
 			$chatmsg = new Chat(null, $chatid, $this);
 			$chatmsg->setBody($body);
@@ -225,6 +222,39 @@ class Main extends EventDispatcher
 		if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;
 
 		return $matches;
+	}
+
+	public function findChat($chatname)
+	{
+		$chatid = false;
+
+		if (substr($chatname, 0, 1) == '#') {
+			$this->chatnames[$chatname] = $chatname;
+		}
+
+		$chatname = mb_strtolower($chatname);
+
+		if (isset($this->chatnames[$chatname])) {
+			$chatid = $this->chatnames[$chatname];
+		} else {
+			$chats = $this->_getRecentChats();
+
+			if (!count($chats)) return false;
+
+			foreach ($chats as $cid) {
+				$friendlyname = mb_strtolower($this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME'));
+
+				$this->chatnames[$friendlyname] = $cid;
+
+				if (strpos($friendlyname, $chatname) !== false) {
+					$this->chatnames[$chatname] = $cid;
+					$chatid = $cid;
+					break;
+				}
+			}
+		}
+
+		return $chatid;
 	}
 
 	public function reply(Reply $reply)
@@ -260,5 +290,48 @@ class Main extends EventDispatcher
 	private function _refuseCalls()
 	{
 		$this->getDriver()->refuseCalls();
+	}
+
+	public function loadCronJobs($filterdirs)
+	{
+		$finder = new Finder();
+
+		if (!is_array($filterdirs)) {
+			$filterdirs = array($filterdirs);
+		}
+
+		foreach ($filterdirs as $dir) {
+			if (!$dir) continue;
+
+			try {
+				$finder->files()->in($dir)->name("*.php");
+
+				foreach ($finder as $file) {
+					require_once $file;
+
+					$classname = "\\Skybot\\Cron\\".basename($file->getFileName(), ".php");
+
+					$implements = class_implements($classname);
+
+					if (!$implements) continue;
+
+					if (in_array("Skybot\\CronInterface", $implements)) {
+						if (isset($this->cronjobs[$classname])) continue;
+
+						$cronjob = new $classname($this);
+
+						if ($cronjob instanceof \Skybot\BaseCron) {
+							$this->cronjobs[$classname] = $cronjob;
+						} else {
+							throw new \Exception("$classname is not instance of Skybot\\BaseCron\n");
+						}
+					} else {
+						throw new \Exception("$classname is does not implement Skybot\\CronInterface\n");
+					}
+				}
+			} catch (InvalidArgumentException $e) {
+
+			}
+		}
 	}
 }

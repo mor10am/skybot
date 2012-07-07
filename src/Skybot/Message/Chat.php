@@ -44,6 +44,11 @@ class Chat extends Event
 		}
 	}
 
+	public function setChatId($chatid)
+	{
+		$this->chatid = $chatid;
+	}
+
 	public function getMessageId()
 	{
 		return $this->messageid;

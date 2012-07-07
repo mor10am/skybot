@@ -50,6 +50,8 @@ $driver->initialize(array(
 
 $skybot = new \Skybot\Main($driver, $config, $log);
 
+$skybot->loadCronJobs(array(__DIR__."/src/Skybot/Cron/"));
+
 $plugincontainer = new \Skybot\PluginContainer($skybot);
 
 $skybot->setPluginContainer($plugincontainer);
@@ -69,7 +71,7 @@ try {
 	$plugincontainer->loadFilters(array($config->getFilterDir(), __DIR__."/src/Skybot/Filter/"));
 
 	do {
-		$skybot->handleChatMessages();
+		$skybot->handle();
 
 		usleep(500000);
 

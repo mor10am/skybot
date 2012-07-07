@@ -10,12 +10,19 @@
 		}
 	],
 	"bin": ["skybot.php", "async.php"],
+	"repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mtdowling/cron-expression"
+        }
+    ],
 	"require": {
 		"php": ">=5.3.3",
 		"symfony/event-dispatcher": "2.0.*",
 		"symfony/finder": "2.0.*",
 		"symfony/yaml": "2.0.*",
-		"monolog/monolog": "dev-master"
+		"monolog/monolog": "dev-master",
+		"mtdowling/cron-expression": "dev-master"
 	},
     "autoload": {
         "psr-0": {
