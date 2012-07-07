@@ -1,7 +1,8 @@
 skybot:
   contactname: "<skybot contactname to be filtered out of conversation>"
   plugin_dir: "<full path to plugins>"
-  filter_dir: "<full path to filters>""
+  filter_dir: "<full path to filters>"
+  cronjob_dir: "<full path to cronjobs>"
   log_dir: "<full path of log dir>"
   base_dir: "<base path of the project>"
   async_cmd: "<relative (to the base_dir) path and filename of async command>"
