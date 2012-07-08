@@ -20,6 +20,11 @@ abstract class BaseCron
 		return $this->expression;
 	}
 
+	public function getDescription()
+	{
+		return $this->description;
+	}
+
 	public function run()
 	{
 		$cron = CronExpression::factory($this->getExpression());

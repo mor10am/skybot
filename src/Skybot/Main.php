@@ -294,6 +294,11 @@ class Main extends EventDispatcher
 		$this->getDriver()->refuseCalls();
 	}
 
+	public function getCronjobs()
+	{
+		return $this->cronjobs;
+	}
+
 	public function loadCronJobs($filterdirs)
 	{
 		$finder = new Finder();
