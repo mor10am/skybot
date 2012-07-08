@@ -111,6 +111,8 @@ class Main extends EventDispatcher
 		$this->_handleCronJobs();
 
 		$this->_handleMessagesFromPort();
+
+		$this->_handleChatMessages();
 	}
 
 	private function _handleCronJobs()
@@ -230,9 +232,9 @@ class Main extends EventDispatcher
 
 		if (substr($chatname, 0, 1) == '#') {
 			$this->chatnames[$chatname] = $chatname;
+		} else {
+			$chatname = mb_strtolower($chatname);
 		}
-
-		$chatname = mb_strtolower($chatname);
 
 		if (isset($this->chatnames[$chatname])) {
 			$chatid = $this->chatnames[$chatname];
