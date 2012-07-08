@@ -329,7 +329,7 @@ class Main extends EventDispatcher
 
 						if ($cronjob instanceof \Skybot\BaseCron) {
 							$this->cronjobs[$classname] = $cronjob;
-							$this->getLog()->addDebug("Added cron ".get_class($cronjob));
+							$this->log->addDebug("Added cron ".get_class($cronjob));
 						} else {
 							throw new \Exception("$classname is not instance of Skybot\\BaseCron\n");
 						}
@@ -338,7 +338,7 @@ class Main extends EventDispatcher
 					}
 				}
 			} catch (\InvalidArgumentException $e) {
-
+				$this->log->addError($e->getMessage());
 			}
 		}
 	}

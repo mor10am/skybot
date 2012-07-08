@@ -127,27 +127,33 @@ class PluginContainer
 		foreach ($plugindirs as $dir) {
 			if (!$dir) continue;
 
-			$finder->files()->in($dir)->name("*.php");
+			try {
+				$finder->files()->in($dir)->name("*.php");
 
-			foreach ($finder as $file) {
-				require_once $file;
+				foreach ($finder as $file) {
+					require_once $file;
 
-				$classname = "\\Skybot\\Plugin\\".basename($file->getFileName(), ".php");
+					$classname = "\\Skybot\\Plugin\\".basename($file->getFileName(), ".php");
 
-				$implements = class_implements($classname);
+					$implements = class_implements($classname);
 
-				if (!$implements) continue;
+					if (!$implements) continue;
 
-				if (in_array("Skybot\\PluginInterface", $implements)) {
-					$plugin = new $classname($this->skybot);
+					if (in_array("Skybot\\PluginInterface", $implements)) {
+						$plugin = new $classname($this->skybot);
 
-					if ($plugin instanceof \Skybot\BasePlugin) {
-						$this->addPlugin($plugin);
+						if ($plugin instanceof \Skybot\BasePlugin) {
+							$this->addPlugin($plugin);
+						} else {
+							throw new \Exception("$classname is not instance of Skybot\\BasePlugin\n");
+						}
 					} else {
-						throw new \Exception("$classname is not instance of Skybot\\BasePlugin\n");
+						throw new \Exception("$classname is does not implement Skybot\\PluginInterface\n");
 					}
-				} else {
-					throw new \Exception("$classname is does not implement Skybot\\PluginInterface\n");
+				}
+			} catch (\InvalidArgumentException $e) {
+				if ($this->skybot) {
+					$this->skybot->getLog()->addError($e->getMessage());
 				}
 			}
 		}
@@ -188,8 +194,10 @@ class PluginContainer
 						throw new \Exception("$classname is does not implement Skybot\\FilterInterface\n");
 					}
 				}
-			} catch (InvalidArgumentException $e) {
-
+			} catch (\InvalidArgumentException $e) {
+				if ($this->skybot) {
+					$this->skybot->getLog()->addError($e->getMessage());
+				}
 			}
 		}
 	}
