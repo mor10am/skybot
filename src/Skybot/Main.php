@@ -337,7 +337,7 @@ class Main extends EventDispatcher
 						throw new \Exception("$classname is does not implement Skybot\\CronInterface\n");
 					}
 				}
-			} catch (InvalidArgumentException $e) {
+			} catch (\InvalidArgumentException $e) {
 
 			}
 		}
