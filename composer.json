@@ -21,8 +21,7 @@
 		"symfony/event-dispatcher": "2.0.*",
 		"symfony/finder": "2.0.*",
 		"symfony/yaml": "2.0.*",
-		"monolog/monolog": "dev-master",
-		"mtdowling/cron-expression": "dev-master"
+		"monolog/monolog": "dev-master"
 	},
     "autoload": {
         "psr-0": {

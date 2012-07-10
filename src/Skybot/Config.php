@@ -18,7 +18,6 @@ class Config
 	public $contactname;
 	public $plugin_dir;
 	public $filter_dir;
-	public $cronjob_dir;
 	public $log_dir;
 	public $server_port;
 
@@ -56,10 +55,6 @@ class Config
 
 		if (isset($config['skybot']['filter_dir'])) {
 			$this->filter_dir = $config['skybot']['filter_dir'];
-		}
-
-		if (isset($config['skybot']['cronjob_dir'])) {
-			$this->cronjob_dir = $config['skybot']['cronjob_dir'];
 		}
 
 		if (isset($config['skybot']['log_dir'])) {
@@ -104,11 +99,6 @@ class Config
 	public function getFilterDir()
 	{
 		return $this->filter_dir;
-	}
-
-	public function getCronJobDir()
-	{
-		return $this->cronjob_dir;
 	}
 
 	public function getLogDir()

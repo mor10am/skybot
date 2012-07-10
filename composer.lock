@@ -1,5 +1,5 @@
 {
-    "hash": "3b8a7b909a4d515038bc8b3ba9fcd3b9",
+    "hash": "e054023aed8c3c71043caa15d8a90439",
     "packages": [
         {
             "package": "monolog/monolog",
@@ -8,28 +8,22 @@
             "commit-date": "1340715384"
         },
         {
-            "package": "mtdowling/cron-expression",
-            "version": "dev-master",
-            "source-reference": "30a5a341175fd63824e2d7a628f0ed6d2c48eb70",
-            "commit-date": "1328681798"
-        },
-        {
             "package": "symfony/event-dispatcher",
             "version": "2.0.x-dev",
-            "source-reference": "v2.0.15",
-            "commit-date": "1337100992"
+            "source-reference": "db210286198c2a335388d410fbff893ae509bad6",
+            "commit-date": "1341837830"
         },
         {
             "package": "symfony/finder",
             "version": "2.0.x-dev",
-            "source-reference": "v2.0.15",
-            "commit-date": "1337362678"
+            "source-reference": "303e6cb6ec335256bd05f5caf8e6703a4f840690",
+            "commit-date": "1341837830"
         },
         {
             "package": "symfony/yaml",
             "version": "2.0.x-dev",
-            "source-reference": "c123857e83b279a4a1300ef27cc8cc25d8ea84f9",
-            "commit-date": "1339254257"
+            "source-reference": "04edc329027cf987462fa4d74c1112d186212f4f",
+            "commit-date": "1341837830"
         }
     ],
     "packages-dev": null,
@@ -38,7 +32,6 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "monolog/monolog": 20,
-        "mtdowling/cron-expression": 20
+        "monolog/monolog": 20
     }
 }

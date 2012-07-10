@@ -41,7 +41,6 @@ class Main extends EventDispatcher
 	private $config;
 	private $log;
 	private $plugincontainer;
-	private $cronjobs = array();
 
 	public function __construct(DriverInterface $driver, Config $config, \Monolog\Logger $log)
 	{
@@ -108,26 +107,9 @@ class Main extends EventDispatcher
 	{
 		$this->_refuseCalls();
 
-		$this->_handleCronJobs();
-
 		$this->_handleMessagesFromPort();
 
 		$this->_handleChatMessages();
-	}
-
-	private function _handleCronJobs()
-	{
-		foreach ($this->cronjobs as $job) {
-			try {
-				if ($chatmsg = $job->run()) {
-					if ($chatmsg instanceof Chat and $chatmsg->getChatId()) {
-						$this->dispatch('skybot.message', $chatmsg);
-					}
-				}
-			} catch (\Exception $e) {
-				$this->log->addError($e->getMessage());
-			}
-		}
 	}
 
 	private function _handleChatMessages()
@@ -292,54 +274,5 @@ class Main extends EventDispatcher
 	private function _refuseCalls()
 	{
 		$this->getDriver()->refuseCalls();
-	}
-
-	public function getCronjobs()
-	{
-		return $this->cronjobs;
-	}
-
-	public function loadCronJobs($filterdirs)
-	{
-		$finder = new Finder();
-
-		if (!is_array($filterdirs)) {
-			$filterdirs = array($filterdirs);
-		}
-
-		foreach ($filterdirs as $dir) {
-			if (!$dir) continue;
-
-			try {
-				$finder->files()->in($dir)->name("*.php");
-
-				foreach ($finder as $file) {
-					require_once $file;
-
-					$classname = "\\Skybot\\Cron\\".basename($file->getFileName(), ".php");
-
-					$implements = class_implements($classname);
-
-					if (!$implements) continue;
-
-					if (in_array("Skybot\\CronInterface", $implements)) {
-						if (isset($this->cronjobs[$classname])) continue;
-
-						$cronjob = new $classname($this);
-
-						if ($cronjob instanceof \Skybot\BaseCron) {
-							$this->cronjobs[$classname] = $cronjob;
-							$this->log->addDebug("Added cron ".get_class($cronjob));
-						} else {
-							throw new \Exception("$classname is not instance of Skybot\\BaseCron\n");
-						}
-					} else {
-						throw new \Exception("$classname is does not implement Skybot\\CronInterface\n");
-					}
-				}
-			} catch (\InvalidArgumentException $e) {
-				$this->log->addError($e->getMessage());
-			}
-		}
 	}
 }
