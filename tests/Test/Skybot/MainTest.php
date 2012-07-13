@@ -1,8 +1,10 @@
 <?php
 
+namespace Test\Skybot;
+
 use Skybot\Main;
 
-class SkypeTest extends \PHPUnit_Framework_TestCase
+class MainTest extends \PHPUnit_Framework_TestCase
 {
 	public function testMultilineTcpMessage()
 	{

@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\Skybot\Plugin;
+
 use Skybot\Driver\Dummy;
 use Skybot\Config;
 use Monolog\Logger;

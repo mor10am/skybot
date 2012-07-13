@@ -30,7 +30,7 @@
     "aliases": [
 
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": {
         "monolog/monolog": 20
     }
