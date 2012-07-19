@@ -20,8 +20,10 @@ class EchoString extends BasePlugin implements PluginInterface
 	protected $regexp = "/^echo( me)? (.*)$/ms";
 	protected $description = "Echo back the same text.";
 
-	public function handle(Chat $chatmsg, $result)
+	public function handle(Chat $chatmsg)
 	{
+		$result = $chatmsg->getResult();
+
 		return $result[2];
 	}
 }

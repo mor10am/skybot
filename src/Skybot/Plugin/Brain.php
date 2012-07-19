@@ -28,8 +28,10 @@ class Brain extends BasePlugin implements PluginInterface
 		$this->storage = new Storage('brain.sqlite');
 	}
 
-	public function handle(Chat $chatmsg, $result)
+	public function handle(Chat $chatmsg)
 	{
+		$result = $chatmsg->getResult();
+
 		if ($result[1] == 'set') {
 			$tmp = explode(" ", $result[2]);
 

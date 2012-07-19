@@ -33,10 +33,16 @@ abstract class BasePlugin
 
 	public function run(Chat $chatmsg)
 	{
-		if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
+		if ($chatmsg->isMsgCaptured()) {
+			$chatmsg->setResult(array($chatmsg->getBody()));
+		} else {
+			if (!$matches = preg_match($this->getRegexp(), $chatmsg->getBody(), $result)) return false;
 
-		if (isset($result[1]) and trim($result[1]) == 'me') {
-			$chatmsg->setDM();
+			$chatmsg->setResult($result);
+
+			if (isset($result[1]) and trim($result[1]) == 'me') {
+				$chatmsg->setDM();
+			}
 		}
 
 		if ($this->async) {
@@ -68,7 +74,7 @@ abstract class BasePlugin
 			return true;
 
 		} else {
-			return $this->handle($chatmsg, $result);
+			return $this->handle($chatmsg);
 		}
 	}
 
@@ -80,5 +86,12 @@ abstract class BasePlugin
 	public function getDescription()
 	{
 		return $this->description;
+	}
+
+	public function captureNext($contactname)
+	{
+		if ($pc = $this->skybot->getPluginContainer()) {
+			$pc->registerContactForPlugin($contactname, $this);
+		}
 	}
 }

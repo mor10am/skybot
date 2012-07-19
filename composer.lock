@@ -4,8 +4,8 @@
         {
             "package": "monolog/monolog",
             "version": "dev-master",
-            "source-reference": "6cbdc0410c08fb03d7eee6b69126661fcbb89c41",
-            "commit-date": "1340715384"
+            "source-reference": "59fb9f41be22b246f5e5d3bd8a012ed77f44a7d0",
+            "commit-date": "1342167011"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -22,7 +22,7 @@
         {
             "package": "symfony/yaml",
             "version": "2.0.x-dev",
-            "source-reference": "04edc329027cf987462fa4d74c1112d186212f4f",
+            "source-reference": "v2.0.16",
             "commit-date": "1341837830"
         }
     ],

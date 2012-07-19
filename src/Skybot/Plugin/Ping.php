@@ -20,7 +20,7 @@ class Ping extends BasePlugin implements PluginInterface
 	protected $regexp = "/^ping( me)?$/";
 	protected $description = "Answers a 'ping' with a 'pong'";
 
-	public function handle(Chat $chatmsg, $result)
+	public function handle(Chat $chatmsg)
 	{
 		return "Hi, " . $chatmsg->getDispName() . ". Pong!";
 	}

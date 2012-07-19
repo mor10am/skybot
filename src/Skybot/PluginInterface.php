@@ -17,6 +17,6 @@ use Skybot\Message\Chat;
 interface PluginInterface
 {
 	function __construct(Main $skybot);
-	function handle(Chat $chatmsg, $result);
+	function handle(Chat $chatmsg);
 	function initialize();
 }

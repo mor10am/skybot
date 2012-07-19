@@ -28,6 +28,8 @@ class Chat extends Event
 	private $skybot;
 	private $replybody;
 	private $internal = false;
+	private $result = array();
+	private $msg_was_captured = false;
 
 	public function __construct($msgid = null, $chatid = null, \Skybot\Main $skybot = null)
 	{
@@ -42,6 +44,26 @@ class Chat extends Event
 			$this->setBody($properties['body']);
 			$this->timestamp = $properties['timestamp'];
 		}
+	}
+
+	public function isMsgCaptured()
+	{
+		return $this->msg_was_captured;
+	}
+
+	public function setCaptured()
+	{
+		$this->msg_was_captured = true;
+	}
+
+	public function setResult($result)
+	{
+		$this->result = $result;
+	}
+
+	public function getResult()
+	{
+		return $this->result;
 	}
 
 	public function setChatId($chatid)
@@ -159,8 +181,6 @@ class Chat extends Event
 			} else {
 				$this->skybot->reply(new Reply($this, $txt, $this->dm));
 			}
-		} else {
-			echo $txt."\n";
 		}
 
 		return true;

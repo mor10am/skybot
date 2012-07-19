@@ -21,6 +21,7 @@ class PluginContainer
 {
 	private $plugins = array();
 	private $filters = array();
+	private $capture = array();
 
 	private $skybot;
 
@@ -44,20 +45,42 @@ class PluginContainer
 			}
 		}
 
-		foreach ($this->getPlugins() as $plugin) {
+		if (isset($this->capture[$chatmsg->getContactName()])) {
+
+			$plugin = $this->capture[$chatmsg->getContactName()];
+
+			unset($this->capture[$chatmsg->getContactName()]);
+
+			$chatmsg->setCaptured();
+
 			try {
 				$response = $plugin->run($chatmsg);
 
-				if ($response === false) continue;
-
-				if ($response and is_string($response)) {
-					$chatmsg->reply($response);
+				if ($response !== false) {
+					if ($response and is_string($response)) {
+						$chatmsg->reply($response);
+					}
 				}
-
-				break;
-
 			} catch (\Exception $e) {
-				$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $dm));
+				$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $chatmsg->isDM()));
+			}
+		} else {
+
+			foreach ($this->getPlugins() as $plugin) {
+				try {
+					$response = $plugin->run($chatmsg);
+
+					if ($response === false) continue;
+
+					if ($response and is_string($response)) {
+						$chatmsg->reply($response);
+					}
+
+					break;
+
+				} catch (\Exception $e) {
+					$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $chatmsg->isDM()));
+				}
 			}
 		}
 
@@ -69,7 +92,7 @@ class PluginContainer
 			}
 		}
 
-		return $chatmsg;
+		return $response;
 	}
 
 	public function addPlugin(PluginInterface $plugin)
@@ -200,5 +223,10 @@ class PluginContainer
 				}
 			}
 		}
+	}
+
+	public function registerContactForPlugin($contactname, $plugin)
+	{
+		$this->capture[$contactname] = $plugin;
 	}
 }

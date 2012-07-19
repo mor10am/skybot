@@ -20,7 +20,7 @@ class Health extends BasePlugin implements PluginInterface
 	protected $regexp = "/^health( me)?$/";
 	protected $description = "Get health statistics of Skybot.";
 
-	public function handle(Chat $chatmsg, $result)
+	public function handle(Chat $chatmsg)
 	{
 		if (!$this->skybot) {
 			return "No Skybot registered";

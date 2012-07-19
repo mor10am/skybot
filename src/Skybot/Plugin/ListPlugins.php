@@ -20,9 +20,8 @@ class ListPlugins extends BasePlugin implements PluginInterface
 	protected $regexp = "/^plugins$/";
 	protected $description = "List all plugins.";
 
-	public function handle(Chat $chatmsg, $result)
+	public function handle(Chat $chatmsg)
 	{
-
 		if (!$this->skybot) return "No Skybot registered";
 		if (!$this->skybot->getPluginContainer()) return "No plugins registered.";
 
