@@ -39,9 +39,15 @@ class PluginContainer
 	{
 		foreach ($this->getFilters() as $filter) {
 			if ($filter->beforePlugins()) {
-				$ret = $filter->handle($chatmsg);
-				if (!$ret instanceof Chat) break;
-				$chatmsg = $ret;
+				try {
+					$ret = $filter->handle($chatmsg);
+					if (!$ret instanceof Chat) break;
+					$chatmsg = $ret;
+				} catch (\Exception $e) {
+					if ($this->skybot) {
+						$this->skybot->getLog()->addError($e->getMessage());
+					}
+				}
 			}
 		}
 
@@ -62,7 +68,9 @@ class PluginContainer
 					}
 				}
 			} catch (\Exception $e) {
-				$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $chatmsg->isDM()));
+				if ($this->skybot) {
+					$this->skybot->getLog()->addError($e->getMessage());
+				}
 			}
 		} else {
 
@@ -79,16 +87,24 @@ class PluginContainer
 					break;
 
 				} catch (\Exception $e) {
-					$chatmsg->reply(new Reply($chatmsg, $e->getMessage(), $chatmsg->isDM()));
+					if ($this->skybot) {
+						$this->skybot->getLog()->addError($e->getMessage());
+					}
 				}
 			}
 		}
 
 		foreach ($this->getFilters() as $filter) {
 			if ($filter->afterPlugins()) {
-				$ret = $filter->handle($chatmsg);
-				if (!$ret instanceof Chat) break;
-				$chatmsg = $ret;
+				try {
+					$ret = $filter->handle($chatmsg);
+					if (!$ret instanceof Chat) break;
+					$chatmsg = $ret;
+				} catch (\Exception $e) {
+					if ($this->skybot) {
+						$this->skybot->getLog()->addError($e->getMessage());
+					}
+				}
 			}
 		}
 
