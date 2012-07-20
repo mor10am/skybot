@@ -1,5 +1,5 @@
 {
-    "hash": "e054023aed8c3c71043caa15d8a90439",
+    "hash": "3694ec599bfe2968fc88ee18c74cf7da",
     "packages": [
         {
             "package": "monolog/monolog",
@@ -30,7 +30,7 @@
     "aliases": [
 
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "monolog/monolog": 20
     }

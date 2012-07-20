@@ -11,10 +11,6 @@
 	],
 	"bin": ["skybot.php", "async.php"],
 	"repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mtdowling/cron-expression"
-        }
     ],
 	"require": {
 		"php": ">=5.3.3",
@@ -23,6 +19,7 @@
 		"symfony/yaml": "2.0.*",
 		"monolog/monolog": "dev-master"
 	},
+	"minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "Skybot": "src"
