@@ -190,7 +190,10 @@ class Main extends EventDispatcher
 			$contactname = trim($matches[2]);
 			$body = $matches[3]." [".$contactname."]";
 
-			if (!$chatid = $this->findChat($chatname)) continue;
+			if (!$chatid = $this->findChat($chatname)) {
+				$this->log->addWarning("No chat ($chatname) found for message: ".$txt);
+				continue;
+			}
 
 			$chatmsg = new Chat(null, $chatid, $this);
 			$chatmsg->setBody($body);
@@ -225,12 +228,14 @@ class Main extends EventDispatcher
 
 			if (!count($chats)) return false;
 
+			$len = mb_strlen($chatname);
+
 			foreach ($chats as $cid) {
 				$friendlyname = mb_strtolower($this->getDriver()->getChatProperty($cid, 'FRIENDLYNAME'));
 
 				$this->chatnames[$friendlyname] = $cid;
 
-				if (strpos($friendlyname, $chatname) !== false) {
+				if (mb_substr($friendlyname, 0, $len) == $chatname) {
 					$this->chatnames[$chatname] = $cid;
 					$chatid = $cid;
 					break;
