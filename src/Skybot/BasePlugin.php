@@ -52,7 +52,7 @@ abstract class BasePlugin
 
 			$payload = base64_encode(serialize($asyncmsg));
 
-			$this->skybot->getLog()->addDebug("Run {$asyncmsg->plugin} ASYNC for {$asyncmsg->contactname}");
+			$this->skybot->getLog()->addDebug("Run {$asyncmsg->plugin} ASYNC for ".$asyncmsg->getUser()->getContactName());
 
 			$dir = false;
 

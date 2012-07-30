@@ -51,11 +51,11 @@ class PluginContainer
 			}
 		}
 
-		if (isset($this->capture[$chatmsg->getContactName()])) {
+		if (isset($this->capture[$chatmsg->getUser()->getContactName()])) {
 
-			$plugin = $this->capture[$chatmsg->getContactName()];
+			$plugin = $this->capture[$chatmsg->getUser()->getContactName()];
 
-			unset($this->capture[$chatmsg->getContactName()]);
+			unset($this->capture[$chatmsg->getUser()->getContactName()]);
 
 			$chatmsg->setCaptured();
 

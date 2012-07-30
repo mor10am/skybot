@@ -4,6 +4,7 @@ namespace Test\Skybot\Plugin;
 
 use Skybot\Driver\Dummy;
 use Skybot\Config;
+use Skybot\User;
 use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 
@@ -31,7 +32,7 @@ class AskTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ask what is your name");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $pc->parseMessage($message);
 
@@ -40,7 +41,7 @@ class AskTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("Morten");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $pc->parseMessage($message);
 

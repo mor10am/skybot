@@ -27,7 +27,7 @@ class Main extends EventDispatcher
 {
 	private $timestamp;
 
-	private $contactname;
+	private $user;
 
 	private $personalchats = array();
 	private $chatnames = array();
@@ -48,7 +48,7 @@ class Main extends EventDispatcher
 		$this->config = $config;
 		$this->log = $log;
 
-		$this->contactname = $config->getContactName();
+		$this->user = new User($config->getContactName(), $this);
 		$this->timestamp = time();
 
 		$port = $config->getServerPort();
@@ -60,12 +60,12 @@ class Main extends EventDispatcher
 			$port = "<NO PORT>";
 		}
 
-		$log->addInfo("Starting Skybot as ".$this->contactname." and listening on port $port");
+		$log->addInfo("Starting Skybot as ".$this->user->getContactName()." and listening on port $port");
 	}
 
-	public function getContactName()
+	public function getUser()
 	{
-		return $this->contactname;
+		return $this->user;
 	}
 
 	public function getStartupTime()
@@ -131,7 +131,7 @@ class Main extends EventDispatcher
 		if (!count($recentmessages)) return true;
 
 		foreach ($recentmessages as $chatmsg) {
-			if ($chatmsg->getContactName() == $this->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
+			if ($chatmsg->getUser()->getContactName() == $this->getUser()->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
 				continue;
 			}
 
@@ -197,7 +197,7 @@ class Main extends EventDispatcher
 
 			$chatmsg = new Chat(null, $chatid, $this);
 			$chatmsg->setBody($body);
-			$chatmsg->setContactName($contactname);
+			$chatmsg->setUser(new User($contactname, $this));
 			$chatmsg->setInternal();
 
 			$this->dispatch('skybot.message', $chatmsg);
@@ -255,25 +255,25 @@ class Main extends EventDispatcher
 		} else {
 			$this->getDriver()->sendReply($reply);
 
-			$this->log->addInfo("Skybot reply to ".$reply->getChatMsg()->getDispName(). " : ".$reply->getBody());
+			$this->log->addInfo("Skybot reply to ".$reply->getChatMsg()->getUser()->getDisplayName(). " : ".$reply->getBody());
 		}
 	}
 
 	public function directMessage(Direct $dm)
 	{
-		if (!isset($this->personalchats[$dm->getContactName()])) {
+		if (!isset($this->personalchats[$dm->getUser->getContactName()])) {
 
-			$chatid = $this->getDriver()->createChatWith($dm->getContactName());
+			$chatid = $this->getDriver()->createChatWith($dm->getUser());
 
 			$this->personalchats[$dm->getContactName()] = $chatid;
 
 		} else {
-			$chatid = $this->personalchats[$dm->getContactName()];
+			$chatid = $this->personalchats[$dm->getUser()->getContactName()];
 		}
 
 		$this->getDriver()->sendDirectMessage($dm);
 
-		$this->log->addInfo("Skybot DM to ".$dm->getContactName(). " : ".$dm->getBody());
+		$this->log->addInfo("Skybot DM to ".$dm->getUser()->getContactName(). " : ".$dm->getBody());
 	}
 
 	private function _refuseCalls()

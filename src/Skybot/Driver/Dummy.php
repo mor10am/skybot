@@ -17,6 +17,7 @@ use Skybot\Main;
 use Skybot\Message\Chat;
 use Skybot\Message\Direct;
 use Skybot\Message\Reply;
+use Skybot\User;
 
 class Dummy implements DriverInterface
 {
@@ -70,7 +71,7 @@ class Dummy implements DriverInterface
 	{
 	}
 
-	public function createChatWith($contactname)
+	public function createChatWith(User $user)
 	{
 	}
 

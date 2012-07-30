@@ -13,6 +13,7 @@ namespace Skybot\Message;
 
 use Skybot\Message\Reply;
 use Skybot\Message\Async;
+use Skybot\User;
 use Symfony\Component\EventDispatcher\Event;
 
 class Chat extends Event
@@ -20,8 +21,7 @@ class Chat extends Event
 	private $messageid;
 	private $body;
 	private $timestamp;
-	private $contactname;
-	private $dispname;
+	private $user;
 	private $chatid;
 	private $marked = false;
 	private $dm = false;
@@ -39,8 +39,6 @@ class Chat extends Event
 
 		if ($msgid and $skybot) {
 			$properties = $skybot->getDriver()->getMessageProperties($this);
-			$this->setContactName($properties['contactname']);
-			$this->setDispName($properties['displayname']);
 			$this->setBody($properties['body']);
 			$this->timestamp = $properties['timestamp'];
 		}
@@ -116,25 +114,14 @@ class Chat extends Event
 		$this->body = $msg;
 	}
 
-	public function setContactName($contactname)
+	public function setUser(User $user)
 	{
-		$this->contactname = $contactname;
+		$this->user = $user;
 	}
 
-	public function getContactName()
+	public function getUser()
 	{
-		return $this->contactname;
-	}
-
-	public function setDispName($name)
-	{
-		$this->dispname = $name;
-	}
-
-	public function getDispName()
-	{
-		if (!$this->dispname) return $this->getContactName();
-		return $this->dispname;
+		return $this->user;
 	}
 
 	public function getTimestamp()
@@ -193,7 +180,7 @@ class Chat extends Event
 		$msg->chatid = $this->chatid;
 		$msg->messageid = $this->messageid;
 		$msg->timestamp = $this->timestamp;
-		$msg->contactname = $this->contactname;
+		$msg->user = $this->user;
 		$msg->skybot = $this->skybot;
 
 		return $msg;

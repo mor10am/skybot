@@ -17,6 +17,7 @@ use Skybot\Main;
 use Skybot\Message\Chat;
 use Skybot\Message\Direct;
 use Skybot\Message\Reply;
+use Skybot\User;
 
 class Skype implements DriverInterface
 {
@@ -24,6 +25,7 @@ class Skype implements DriverInterface
 	private $proxy;
 	private $calls = array();
 	private $messages = array();
+	private $users = array();
 
 	public function __construct()
 	{
@@ -80,12 +82,21 @@ class Skype implements DriverInterface
 		$result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_HANDLE");
 
 		$template = "CHATMESSAGE $msgid FROM_HANDLE ";
-		$properties['contactname'] = trim(str_replace($template, "", $result));
+		$contactname = trim(str_replace($template, "", $result));
 
-		$result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_DISPNAME");
+		if (!isset($this->users[$contactname])) {
+			$user = new User($contactname, $chatmsg->getSkybot());
 
-		$template = "CHATMESSAGE $msgid FROM_DISPNAME ";
-		$properties['displayname'] = trim(str_replace($template, "", $result));
+			$result = $this->_sendCommand("GET CHATMESSAGE $msgid FROM_DISPNAME");
+
+			$template = "CHATMESSAGE $msgid FROM_DISPNAME ";
+
+			$user->setDisplayName(trim(str_replace($template, "", $result)));
+
+			$this->users[$contactname] = $user;
+		}
+
+		$chatmsg->setUser($this->users[$contactname]);
 
 		return $properties;
 	}
@@ -148,8 +159,10 @@ class Skype implements DriverInterface
 		$this->_sendCommand("CHATMESSAGE ".$reply->getChatMsg()->getChatId()." ".$reply->getBody());
 	}
 
-	public function createChatWith($contactname)
+	public function createChatWith(User $user)
 	{
+		$contactname = $user->getContactName();
+
 		$result = $this->_sendCommand("CHAT CREATE ".$contactname);
 
 		$tmp = explode(' ', $result);

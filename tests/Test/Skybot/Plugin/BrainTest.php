@@ -4,6 +4,7 @@ namespace Test\Skybot\Plugin;
 
 use Skybot\Driver\Dummy;
 use Skybot\Config;
+use Skybot\User;
 use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 
@@ -26,7 +27,7 @@ class BrainTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat(null, null, $this->skybot);
 
 		$message->setBody("@set test vas");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $plugin->run($message);
 
@@ -40,7 +41,7 @@ class BrainTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat(null, null, $this->skybot);
 
 		$message->setBody("@get test");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $plugin->run($message);
 
@@ -54,7 +55,7 @@ class BrainTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat(null, null, $this->skybot);
 
 		$message->setBody("@get test2");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $plugin->run($message);
 

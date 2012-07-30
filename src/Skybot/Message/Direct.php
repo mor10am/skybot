@@ -11,22 +11,24 @@
 
 namespace Skybot\Message;
 
+use Skybot\User;
+
 class Direct
 {
-	private $contactname;
+	private $user;
 	private $body;
 	private $chatid;
 
-	public function __construct($contactname, $chatid, $body)
+	public function __construct(User $user, $chatid, $body)
 	{
-		$this->contactname = $contactname;
+		$this->user = $user;
 		$this->body = $body;
 		$this->chatid = $chatid;
 	}
 
-	public function getContactName()
+	public function getUser()
 	{
-		return $this->contactname;
+		return $this->user;
 	}
 
 	public function getChatId()

@@ -40,7 +40,7 @@ class Brain extends BasePlugin implements PluginInterface
 			$value = implode(" ", $tmp);
 
 			if ($field and $value) {
-				$this->storage->set($chatmsg->getContactName(), $field, $value);
+				$this->storage->set($chatmsg->getUser()->getContactName(), $field, $value);
 				return "Saved key ".$field;
 			} else {
 				return "Missing key and/or value";
@@ -52,7 +52,7 @@ class Brain extends BasePlugin implements PluginInterface
 			unset($tmp[0]);
 
 			if ($field) {
-				$value = $this->storage->get($chatmsg->getContactName(), $field);
+				$value = $this->storage->get($chatmsg->getUser()->getContactName(), $field);
 
 				if (!$value) {
 					return "Key $field does not have any value";

@@ -24,7 +24,7 @@ class Log extends BaseFilter implements FilterInterface
 	public function handle(Chat $chatmsg)
 	{
 		if ($chatmsg->getSkybot()) {
-			$chatmsg->getSkybot()->getLog()->addDebug($chatmsg->getDispName() . ": " . $chatmsg->getBody());
+			$chatmsg->getSkybot()->getLog()->addDebug($chatmsg->getUser()->getDisplayName() . ": " . $chatmsg->getBody());
 		}
 
 		return $chatmsg;

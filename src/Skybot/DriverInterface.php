@@ -15,6 +15,7 @@ use Skybot\Main;
 use Skybot\Message\Chat;
 use Skybot\Message\Direct;
 use Skybot\Message\Reply;
+use Skybot\User;
 
 interface DriverInterface
 {
@@ -30,6 +31,6 @@ interface DriverInterface
 	function getChatProperty($chatid, $property);
 	function sendDirectMessage(Direct $dm);
 	function sendReply(Reply $reply);
-	function createChatWith($contactname);
+	function createChatWith(User $user);
 	function markSeen(Chat $chatmsg);
 }

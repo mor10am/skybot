@@ -22,6 +22,6 @@ class Ping extends BasePlugin implements PluginInterface
 
 	public function handle(Chat $chatmsg)
 	{
-		return "Hi, " . $chatmsg->getDispName() . ". Pong!";
+		return "Hi, " . $chatmsg->getUser()->getDisplayName() . ". Pong!";
 	}
 }

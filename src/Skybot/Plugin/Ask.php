@@ -25,7 +25,7 @@ class Ask extends BasePlugin implements PluginInterface
 		if ($chatmsg->isMsgCaptured()) {
 			return "You answered: ".$chatmsg->getBody();
 		} else {
-			$this->captureNext($chatmsg->getContactName());
+			$this->captureNext($chatmsg->getUser()->getContactName());
 
 			$result = $chatmsg->getResult();
 

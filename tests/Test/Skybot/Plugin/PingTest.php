@@ -4,6 +4,7 @@ namespace Test\Skybot\Plugin;
 
 use Skybot\Driver\Dummy;
 use Skybot\Config;
+use Skybot\User;
 use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 
@@ -26,7 +27,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ping");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $plugin->run($message);
 
@@ -41,7 +42,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("ping me");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $plugin->run($message);
 
@@ -56,7 +57,7 @@ class PingTest extends \PHPUnit_Framework_TestCase
 		$message = new \Skybot\Message\Chat();
 
 		$message->setBody("pinga");
-		$message->setContactName("myskypename");
+		$message->setUser(new User("myskypename", $this->skybot));
 
 		$response = $plugin->run($message);
 
