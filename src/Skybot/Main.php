@@ -255,7 +255,7 @@ class Main extends EventDispatcher
 		} else {
 			$this->getDriver()->sendReply($reply);
 
-			$this->log->addInfo("Skybot reply to ".$reply->getChatMsg()->getUser()->getDisplayName(). " : ".$reply->getBody());
+			$this->log->addInfo("Skybot reply to ".$reply->getUser()->getDisplayName(). " : ".$reply->getBody());
 		}
 	}
 
