@@ -63,6 +63,11 @@ class Main extends EventDispatcher
 		$log->addInfo("Starting Skybot as ".$this->user->getContactName()." and listening on port $port");
 	}
 
+	public function isDebug()
+	{
+		return $this->config->isDebug();;
+	}
+
 	public function getUser()
 	{
 		return $this->user;
@@ -114,12 +119,32 @@ class Main extends EventDispatcher
 
 	private function _handleChatMessages()
 	{
-		$chats = $this->_getMissedChats();
+		$chats = array();
 
-		if (!count($chats)) return false;
+		$missed_chats = $this->_getMissedChats();
+
+		if (!count($missed_chats)) {
+			$this->log->addDebug("No missed chats were found.");
+			return false;
+		}
+
+		$recent_chats = $this->_getRecentChats();
+
+		if (!count($recent_chats)) {
+			$this->log->addDebug("No recent chats were found.");
+			return false;
+		}
+
+		$chats = array_merge($missed_chats, $recent_chats);
+
+		if (!count($chats)) return true;
 
 		foreach ($chats as $chatid) {
-			if (!$chatid) continue;
+			if (!$chatid) {
+				$this->log->addDebug("Chatid was empty.");
+				continue;
+			}
+
 			$this->_loadAndEmitChatMessages($chatid);
 		}
 	}
@@ -128,10 +153,21 @@ class Main extends EventDispatcher
 	{
 		$recentmessages = $this->getDriver()->getRecentMessagesForChat($chatid, $this);
 
-		if (!count($recentmessages)) return true;
+		if (!count($recentmessages)) {
+			$this->log->addDebug("There are no recent messages.");
+
+			return true;
+		}
 
 		foreach ($recentmessages as $chatmsg) {
-			if ($chatmsg->getUser()->getContactName() == $this->getUser()->getContactName() or $chatmsg->getTimestamp() < $this->timestamp or $chatmsg->isEmpty()) {
+			if (!$chatmsg->getMessageId() or $chatmsg->isEmpty()) continue;
+
+			if ($chatmsg->getUser()->getContactName() == $this->getUser()->getContactName() or $chatmsg->getTimestamp() < $this->timestamp) {
+
+				$this->log->addDebug("Skip msg because: ".
+					$chatmsg->getUser()->getContactName()."==".$this->getUser()->getContactName()." or ".
+					$chatmsg->getTimestamp() . " < " . $this->timestamp . " or empty message");
+
 				continue;
 			}
 
@@ -158,7 +194,9 @@ class Main extends EventDispatcher
 
 	private function _handleMessagesFromPort()
 	{
-		if (!is_resource($this->socket)) return true;
+		if (!is_resource($this->socket)) {
+			return true;
+		}
 
 		if (($client = @socket_accept($this->socket)) !== false) {
 			$this->clients[] = $client;
@@ -206,7 +244,13 @@ class Main extends EventDispatcher
 
 	public static function parseTcpMessage($txt)
 	{
-		if (!preg_match("/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms", $txt, $matches)) return false;
+		$pattern = "/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms";
+
+		if (!preg_match($pattern, $txt, $matches)) {
+			$this->log->addDebug("Msg '".$txt."' did not match pattern '{$pattern}'");
+
+			return false;
+		}
 
 		return $matches;
 	}
@@ -241,6 +285,10 @@ class Main extends EventDispatcher
 					break;
 				}
 			}
+		}
+
+		if (!$chatid) {
+			$this->log->addDebug("Chatname '{$chatname}'' was not found.");
 		}
 
 		return $chatid;

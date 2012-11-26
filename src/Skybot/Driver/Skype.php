@@ -23,19 +23,27 @@ class Skype implements DriverInterface
 {
 	private $dbus;
 	private $proxy;
+	private $log;
 	private $calls = array();
 	private $messages = array();
 	private $users = array();
 
-	public function __construct()
+	public function __construct(\Monolog\Logger $log)
 	{
+		$this->log = $log;
 		$this->dbus = new \DBus(\Dbus::BUS_SESSION, true);
 		$this->proxy = $this->dbus->createProxy("com.Skype.API", "/com/Skype", "com.Skype.API");
 	}
 
 	private function _sendCommand($command)
 	{
-		return $this->proxy->Invoke($command);
+		$this->log->addDebug($command);
+
+		$response = $this->proxy->Invoke($command);
+
+		$this->log->addDebug($response);
+
+		return $response;
 	}
 
 	public function initialize($params = array())
@@ -52,9 +60,18 @@ class Skype implements DriverInterface
 	{
 		$friends = $this->getContacts();
 
-		if (!count($friends)) return false;
+		if (!count($friends)) {
+			$this->log->addDebug("$name has no contacts");
+			return false;
+		}
 
-		return (in_array($name, $friends));
+		$iscontact = (in_array($name, $friends));
+
+		if (!$iscontact) {
+			$this->log->addDebug("$name is not among contacts: ".implode(",", $friends));
+		}
+
+		return $iscontact;
 	}
 
 	public function getContacts()
@@ -67,7 +84,10 @@ class Skype implements DriverInterface
 	{
 		$properties = array();
 
-		if (!$msgid = $chatmsg->getMessageId()) return array();
+		if (!$msgid = $chatmsg->getMessageId()) {
+			$this->log->addDebug("ChatMsg did not have messageid");
+			return array();
+		}
 
 		$result = $this->_sendCommand("GET CHATMESSAGE $msgid BODY");
 

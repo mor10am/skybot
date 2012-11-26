@@ -1,5 +1,6 @@
 skybot:
   contactname: "<skybot contactname to be filtered out of conversation>"
+  debug: true|false
   plugin_dir: "<full path to plugins>"
   filter_dir: "<full path to filters>"
   log_dir: "<full path of log dir>"

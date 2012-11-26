@@ -20,6 +20,7 @@ class Config
 	public $filter_dir;
 	public $log_dir;
 	public $server_port;
+	public $debug = false;
 
 	public $conf = array();
 
@@ -39,6 +40,12 @@ class Config
 		$config = Yaml::parse($filename);
 
 		$this->conf = $config['skybot'];
+
+		if (isset($config['skybot']['debug'])) {
+			if ($config['skybot']['debug'] == 'true') {
+				$this->debug = $config['skybot']['debug'];
+			}
+		}
 
 		if (isset($config['skybot']['contactname'])) {
 			$this->contactname = $config['skybot']['contactname'];
@@ -109,5 +116,10 @@ class Config
 	public function getServerPort()
 	{
 		return $this->server_port;
+	}
+
+	public function isDebug()
+	{
+		return $this->debug;
 	}
 }

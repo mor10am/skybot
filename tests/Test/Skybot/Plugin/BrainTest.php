@@ -17,7 +17,7 @@ class BrainTest extends \PHPUnit_Framework_TestCase
 		$log = new Logger('test');
 		$log->pushHandler(new NullHandler());
 
-		$this->skybot = new \Skybot\Main(new Dummy(), new Config(), $log);
+		$this->skybot = new \Skybot\Main(new Dummy($log), new Config(), $log);
 	}
 
 	public function testSet()

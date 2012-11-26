@@ -40,9 +40,17 @@ if ($config->getPluginDir()) {
 }
 
 $log = new Logger('skybot');
-$log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", Logger::DEBUG));
 
-$driver = new \Skybot\Driver\Skype();
+if ($config->isDebug()) {
+	$loglevel = Logger::DEBUG;
+} else {
+	$loglevel = Logger::INFO;
+}
+
+$log->pushHandler(new StreamHandler($config->getLogDir()."/skybot.log", $loglevel));
+
+$driver = new \Skybot\Driver\Skype($log);
+
 $driver->initialize(array(
 		'appname'	=> 'SKYBOT',
 		'protocol'	=> 7

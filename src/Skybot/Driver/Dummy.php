@@ -21,7 +21,7 @@ use Skybot\User;
 
 class Dummy implements DriverInterface
 {
-	public function __construct()
+	public function __construct(\Monolog\Logger $log)
 	{
 	}
 

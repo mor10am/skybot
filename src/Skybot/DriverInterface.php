@@ -19,7 +19,7 @@ use Skybot\User;
 
 interface DriverInterface
 {
-	function __construct();
+	function __construct(\Monolog\Logger $log);
 	function initialize($params = array());
 	function refuseCalls();
 	function getRecentChats();
