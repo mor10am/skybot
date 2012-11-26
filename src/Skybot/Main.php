@@ -261,7 +261,7 @@ class Main extends EventDispatcher
 
 	public function directMessage(Direct $dm)
 	{
-		if (!isset($this->personalchats[$dm->getUser->getContactName()])) {
+		if (!isset($this->personalchats[$dm->getUser()->getContactName()])) {
 
 			$chatid = $this->getDriver()->createChatWith($dm->getUser());
 
