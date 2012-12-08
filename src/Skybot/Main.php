@@ -215,7 +215,7 @@ class Main extends EventDispatcher
 		}
 
 		foreach ($r as $client) {
-			$bytes = socket_recv($client, $txt, 1024, MSG_DONTWAIT);
+			$bytes = socket_recv($client, $txt, 10240, MSG_DONTWAIT);
 			if (!$bytes) continue;
 
 			socket_getpeername($client, $address, $port);
