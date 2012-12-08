@@ -65,7 +65,7 @@ class Main extends EventDispatcher
 
 	public function isDebug()
 	{
-		return $this->config->isDebug();;
+		return $this->config->isDebug();
 	}
 
 	public function getUser()
@@ -166,7 +166,7 @@ class Main extends EventDispatcher
 
 				$this->log->addDebug("Skip msg because: ".
 					$chatmsg->getUser()->getContactName()."==".$this->getUser()->getContactName()." or ".
-					$chatmsg->getTimestamp() . " < " . $this->timestamp . " or empty message");
+					$chatmsg->getTimestamp() . " < " . $this->timestamp);
 
 				continue;
 			}
