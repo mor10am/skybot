@@ -58,6 +58,11 @@ class Dummy implements DriverInterface
 		return array();
 	}
 
+	public function getUserProperty($contactname, $property)
+	{
+	    return '';
+	}
+
 	public function getChatProperty($chatid, $property)
 	{
 		return '';

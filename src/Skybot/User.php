@@ -40,4 +40,9 @@ class User
 		if (!$this->displayname) return $this->contactname;
 		return $this->displayname;
 	}
+
+	public function getOnlineStatus()
+	{
+	    return $this->skybot->getDriver()->getUserProperty($this->contactname, 'ONLINESTATUS');
+	}
 }

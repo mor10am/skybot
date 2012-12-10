@@ -167,6 +167,13 @@ class Skype implements DriverInterface
 		return $tmp;
 	}
 
+	public function getUserProperty($contactname, $property)
+	{
+	    $property = strtoupper($property);
+		$result = $this->_sendCommand("GET USER {$contactname} {$property}");	 
+		return trim(str_replace("USER {$contactname} {$property}", "", $result));		   
+	}
+
 	public function getChatProperty($chatid, $property)
 	{
 		$result = $this->_sendCommand("GET CHAT $chatid $property");

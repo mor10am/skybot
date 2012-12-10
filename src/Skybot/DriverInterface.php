@@ -28,6 +28,7 @@ interface DriverInterface
 	function isContact($name);
 	function getContacts();
 	function getMessageProperties(Chat $chatmsg);
+	function getUserProperty($contactname, $property);	
 	function getChatProperty($chatid, $property);
 	function sendDirectMessage(Direct $dm);
 	function sendReply(Reply $reply);
