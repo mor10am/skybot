@@ -247,8 +247,6 @@ class Main extends EventDispatcher
 		$pattern = "/\[(.{1,})?\]\[(\w{1,})?\]\s(.*)$/ms";
 
 		if (!preg_match($pattern, $txt, $matches)) {
-			$this->log->addDebug("Msg '".$txt."' did not match pattern '{$pattern}'");
-
 			return false;
 		}
 
