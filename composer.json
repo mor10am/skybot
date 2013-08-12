@@ -14,9 +14,9 @@
     ],
 	"require": {
 		"php": ">=5.3.3",
-		"symfony/event-dispatcher": "2.0.*",
-		"symfony/finder": "2.0.*",
-		"symfony/yaml": "2.0.*",
+		"symfony/event-dispatcher": "~2.1",
+		"symfony/finder": "~2.1",
+		"symfony/yaml": "~2.1",
 		"monolog/monolog": "dev-master"
 	},
 	"minimum-stability": "dev",
